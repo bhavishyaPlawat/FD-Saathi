@@ -1,0 +1,40 @@
+{
+  "app": {
+    "name": "Digital Saathi",
+    "tagline": "Your Financial Companion"
+  },
+  "nav": {
+    "home": "Home",
+    "chat": "Ask Questions",
+    "compare": "Compare FDs",
+    "history": "History",
+    "profile": "Profile"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "phone": "Phone Number",
+    "password": "Password",
+    "name": "Name",
+    "language": "Choose Language"
+  },
+  "chat": {
+    "placeholder": "Ask anything about FDs...",
+    "send": "Send",
+    "newChat": "New Chat",
+    "thinking": "Thinking..."
+  },
+  "compare": {
+    "title": "Compare FD Rates",
+    "amount": "Amount (₹)",
+    "tenor": "Tenor",
+    "senior": "Senior Citizen",
+    "compare": "Compare",
+    "maturity": "Maturity Amount",
+    "interest": "Interest Earned"
+  },
+  "errors": {
+    "generic": "Something went wrong, please try again"
+  }
+}

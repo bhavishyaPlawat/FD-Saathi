@@ -1,0 +1,40 @@
+{
+  "app": {
+    "name": "Digital Saathi",
+    "tagline": "आपका वित्तीय साथी"
+  },
+  "nav": {
+    "home": "होम",
+    "chat": "सवाल पूछें",
+    "compare": "FD तुलना",
+    "history": "इतिहास",
+    "profile": "प्रोफ़ाइल"
+  },
+  "auth": {
+    "login": "लॉगिन",
+    "register": "रजिस्टर",
+    "logout": "लॉगआउट",
+    "phone": "फ़ोन नंबर",
+    "password": "पासवर्ड",
+    "name": "नाम",
+    "language": "भाषा चुनें"
+  },
+  "chat": {
+    "placeholder": "FD के बारे में कुछ भी पूछें...",
+    "send": "भेजें",
+    "newChat": "नई बातचीत",
+    "thinking": "सोच रहा हूँ..."
+  },
+  "compare": {
+    "title": "FD दरें तुलना करें",
+    "amount": "राशि (₹)",
+    "tenor": "अवधि",
+    "senior": "वरिष्ठ नागरिक",
+    "compare": "तुलना करें",
+    "maturity": "परिपक्वता राशि",
+    "interest": "ब्याज"
+  },
+  "errors": {
+    "generic": "कुछ गलत हो गया, फिर से कोशिश करें"
+  }
+}
