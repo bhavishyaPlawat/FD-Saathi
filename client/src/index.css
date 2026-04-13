@@ -9,7 +9,6 @@
 
   body {
     @apply bg-surface text-gray-900 font-sans antialiased;
-    /* Prevent layout shift from scrollbar */
     overflow-x: hidden;
   }
 
@@ -128,7 +127,14 @@
   animation-play-state: paused;
 }
 
-/* ── Bottom nav safe area ─────────────────────────────────────── */
+/* ── Bottom nav safe area (mobile only) ──────────────────────── */
 .pb-nav {
   padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+
+/* On desktop (md+), no bottom nav padding needed */
+@media (min-width: 768px) {
+  .pb-nav {
+    padding-bottom: 0;
+  }
 }

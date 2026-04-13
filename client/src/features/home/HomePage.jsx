@@ -13,8 +13,7 @@ import api from "../../services/api";
 // Horizontal rate ticker
 function RateTicker({ rates }) {
   if (!rates.length) return null;
-  const doubled = [...rates, ...rates]; // seamless loop
-
+  const doubled = [...rates, ...rates];
   return (
     <div className="overflow-hidden bg-white/10 rounded-xl py-2 px-3">
       <div className="ticker-inner">
@@ -85,20 +84,18 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-full">
       {/* ── Welcome hero ──────────────────────────────────────── */}
-      <div className="bg-tertiary-500 px-4 pt-5 pb-6">
+      <div className="bg-tertiary-500 px-4 md:px-8 pt-5 md:pt-8 pb-6 md:pb-8">
         <p className="text-white/70 text-sm">नमस्ते 👋</p>
-        <h1 className="font-headline text-xl font-bold text-white mt-0.5">
+        <h1 className="font-headline text-xl md:text-2xl font-bold text-white mt-0.5">
           {user?.name}
         </h1>
         <p className="text-white/60 text-xs mt-0.5">आज कौन सी FD समझनी है?</p>
-
-        {/* Rate ticker */}
-        <div className="mt-4">
+        <div className="mt-4 max-w-lg">
           <RateTicker rates={featuredRates} />
         </div>
       </div>
 
-      <div className="px-4 py-5 space-y-5">
+      <div className="px-4 md:px-8 py-5 md:py-6 space-y-5 md:space-y-6 max-w-5xl">
         {/* ── Quick chat bar ─────────────────────────────────────── */}
         <div
           onClick={() => navigate("/chat")}
@@ -128,7 +125,8 @@ export default function HomePage() {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
             फटाफट सवाल पूछें
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          {/* 2 cols on mobile, 4 cols on md+ */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {QUICK_ACTIONS.map(({ icon: Icon, title, desc, msg, to }) => (
               <button
                 key={title}
@@ -147,19 +145,45 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── Saathi advice card ─────────────────────────────────── */}
-        <div className="saathi-advice">
-          <div className="w-8 h-8 rounded-full bg-secondary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <Lightbulb size={16} className="text-secondary-700" />
+        {/* ── Two-column on desktop: advice + stats ─────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Saathi advice card */}
+          <div className="saathi-advice">
+            <div className="w-8 h-8 rounded-full bg-secondary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Lightbulb size={16} className="text-secondary-700" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-secondary-700 mb-1 uppercase tracking-wide">
+                साथी की सलाह
+              </p>
+              <p className="text-sm text-secondary-800 leading-relaxed">
+                बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज
+                कमाएं।
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-bold text-secondary-700 mb-1 uppercase tracking-wide">
-              साथी की सलाह
+
+          {/* Quick stats card */}
+          <div className="card bg-primary-50 border-primary-100">
+            <p className="text-xs font-bold text-primary-700 mb-3 uppercase tracking-wide">
+              आज की दरें
             </p>
-            <p className="text-sm text-secondary-800 leading-relaxed">
-              बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज
-              कमाएं।
-            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "SBI 1Y", rate: "6.80%" },
+                { label: "HDFC 1Y", rate: "7.00%" },
+                { label: "Unity SF 1Y", rate: "9.00%" },
+                { label: "Senior +", rate: "+0.50%" },
+              ].map(({ label, rate }) => (
+                <div
+                  key={label}
+                  className="bg-white rounded-xl p-2 text-center shadow-sm"
+                >
+                  <p className="text-[10px] text-gray-500 truncate">{label}</p>
+                  <p className="font-bold text-primary-600 text-sm">{rate}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

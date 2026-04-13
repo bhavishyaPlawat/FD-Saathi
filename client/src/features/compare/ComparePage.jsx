@@ -67,7 +67,6 @@ function BankCard({ bank, rank, inputAmount }) {
 
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          {/* Rank circle */}
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0
             ${isTop ? "bg-primary-500 text-white" : "bg-gray-100 text-gray-500"}`}
@@ -87,7 +86,6 @@ function BankCard({ bank, rank, inputAmount }) {
         </div>
       </div>
 
-      {/* Min amount + tenor */}
       <div className="flex gap-2 mt-3 text-xs text-gray-500">
         <span className="bg-gray-50 rounded-lg px-2 py-1">
           न्यूनतम {formatINR(bank.minAmount)}
@@ -97,7 +95,6 @@ function BankCard({ bank, rank, inputAmount }) {
         </span>
       </div>
 
-      {/* Summary */}
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div className="bg-green-50 rounded-xl p-2 text-center">
           <p className="text-[10px] text-gray-500">ब्याज मिलेगा</p>
@@ -175,172 +172,188 @@ export default function ComparePage() {
     }
   };
 
+  const filteredResults = bankFilter
+    ? results.filter((b) => b.bankType === bankFilter)
+    : results;
+
   return (
-    <div className="px-4 py-5 space-y-5 pb-6">
-      <div>
-        <h2 className="font-headline text-lg font-bold text-gray-800">
+    <div className="px-4 md:px-8 py-5 md:py-6 pb-6">
+      <div className="mb-5">
+        <h2 className="font-headline text-lg md:text-xl font-bold text-gray-800">
           FD दरें तुलना करें
         </h2>
         <p className="text-sm text-gray-500">सभी बैंकों की दरें एक साथ देखें</p>
       </div>
 
-      {/* ── Input card ─────────────────────────────────────── */}
-      <div className="card space-y-4">
-        {/* Amount */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            राशि (₹)
-          </label>
-          <input
-            type="number"
-            className="input-base"
-            placeholder="जैसे: 100000"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {["50000", "100000", "500000", "1000000"].map((a) => (
-              <button
-                key={a}
-                onClick={() => setAmount(a)}
-                className={`text-xs px-3 py-1 rounded-full border transition-colors
-                  ${
-                    amount === a
-                      ? "bg-primary-500 text-white border-primary-500"
-                      : "border-gray-200 text-gray-600 hover:border-primary-300"
-                  }`}
-              >
-                {Number(a) >= 100000
-                  ? `₹${Number(a) / 100000} लाख`
-                  : `₹${Number(a) / 1000}K`}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tenor */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            अवधि चुनें
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            {TENORS.map((t) => (
-              <button
-                key={t.value}
-                onClick={() => setTenorMonths(t.value)}
-                className={`py-2 text-sm rounded-xl border transition-colors font-medium
-                  ${
-                    tenorMonths === t.value
-                      ? "bg-primary-500 text-white border-primary-500"
-                      : "border-gray-200 text-gray-600 hover:border-primary-300"
-                  }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Senior citizen toggle */}
-        <div className="flex items-center justify-between py-1">
+      {/* ── Desktop: side-by-side layout ────────────────────────── */}
+      <div className="lg:grid lg:grid-cols-[380px_1fr] lg:gap-6 lg:items-start max-w-5xl">
+        {/* ── Left: Input card (sticky on desktop) ──────────────── */}
+        <div className="card space-y-4 lg:sticky lg:top-4">
+          {/* Amount */}
           <div>
-            <p className="text-sm font-medium text-gray-700">वरिष्ठ नागरिक</p>
-            <p className="text-xs text-gray-400">60+ वर्ष — अतिरिक्त ब्याज</p>
-          </div>
-          <div
-            onClick={() => setIsSenior(!isSenior)}
-            className="cursor-pointer
-            w-12 h-6 rounded-full relative transition-colors duration-200"
-            style={{ background: isSenior ? "#1D9E75" : "#E5E7EB" }}
-          >
-            <div
-              className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200
-              ${isSenior ? "translate-x-6" : "translate-x-0.5"}`}
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              राशि (₹)
+            </label>
+            <input
+              type="number"
+              className="input-base"
+              placeholder="जैसे: 100000"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
             />
-          </div>
-        </div>
-
-        <button
-          onClick={handleCompare}
-          disabled={loading}
-          className="btn-primary w-full flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            "तुलना हो रही है..."
-          ) : (
-            <>
-              <BarChart2 size={16} /> तुलना करें
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* ── Bank type filter tabs ──────────────────────────── */}
-      {compared && (
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          {BANK_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setBankFilter(f.value)}
-              className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors font-medium
-                ${
-                  bankFilter === f.value
-                    ? "bg-tertiary-500 text-white border-tertiary-500"
-                    : "border-gray-200 text-gray-600 bg-white hover:border-gray-400"
-                }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* ── Summary bar ───────────────────────────────────── */}
-      {compared && results[0] && (
-        <div className="bg-tertiary-500 rounded-2xl p-4 text-white">
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingUp size={15} />
-            <p className="text-xs font-medium opacity-80">साथी की सलाह</p>
-          </div>
-          <p className="font-headline font-bold">{results[0].bankName}</p>
-          <div className="flex gap-4 mt-1.5 text-sm">
-            <span>
-              ब्याज:{" "}
-              <strong className="text-primary-300">{results[0].rate}%</strong>
-            </span>
-            <span>
-              कमाई: <strong>{formatINR(results[0].interestEarned)}</strong>
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* ── Results ───────────────────────────────────────── */}
-      {compared && (
-        <div className="space-y-3">
-          {results.length === 0 ? (
-            <div className="card text-center py-8 text-gray-500">
-              इस फ़िल्टर के लिए कोई बैंक नहीं मिला
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {["50000", "100000", "500000", "1000000"].map((a) => (
+                <button
+                  key={a}
+                  onClick={() => setAmount(a)}
+                  className={`text-xs px-3 py-1 rounded-full border transition-colors
+                    ${
+                      amount === a
+                        ? "bg-primary-500 text-white border-primary-500"
+                        : "border-gray-200 text-gray-600 hover:border-primary-300"
+                    }`}
+                >
+                  {Number(a) >= 100000
+                    ? `₹${Number(a) / 100000} लाख`
+                    : `₹${Number(a) / 1000}K`}
+                </button>
+              ))}
             </div>
-          ) : (
-            results.map((bank, i) => (
-              <BankCard
-                key={bank.bankName + i}
-                bank={bank}
-                rank={i + 1}
-                inputAmount={Number(amount)}
+          </div>
+
+          {/* Tenor */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              अवधि चुनें
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {TENORS.map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => setTenorMonths(t.value)}
+                  className={`py-2 text-sm rounded-xl border transition-colors font-medium
+                    ${
+                      tenorMonths === t.value
+                        ? "bg-primary-500 text-white border-primary-500"
+                        : "border-gray-200 text-gray-600 hover:border-primary-300"
+                    }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Senior toggle */}
+          <div className="flex items-center justify-between py-1">
+            <div>
+              <p className="text-sm font-medium text-gray-700">वरिष्ठ नागरिक</p>
+              <p className="text-xs text-gray-400">60+ वर्ष — अतिरिक्त ब्याज</p>
+            </div>
+            <div
+              onClick={() => setIsSenior(!isSenior)}
+              className="cursor-pointer w-12 h-6 rounded-full relative transition-colors duration-200"
+              style={{ background: isSenior ? "#1D9E75" : "#E5E7EB" }}
+            >
+              <div
+                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200
+                ${isSenior ? "translate-x-6" : "translate-x-0.5"}`}
               />
-            ))
+            </div>
+          </div>
+
+          <button
+            onClick={handleCompare}
+            disabled={loading}
+            className="btn-primary w-full flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              "तुलना हो रही है..."
+            ) : (
+              <>
+                <BarChart2 size={16} /> तुलना करें
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* ── Right: Results ────────────────────────────────────── */}
+        <div className="mt-5 lg:mt-0 space-y-4">
+          {/* Bank type filter tabs */}
+          {compared && (
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+              {BANK_FILTERS.map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => setBankFilter(f.value)}
+                  className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors font-medium
+                    ${
+                      bankFilter === f.value
+                        ? "bg-tertiary-500 text-white border-tertiary-500"
+                        : "border-gray-200 text-gray-600 bg-white hover:border-gray-400"
+                    }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Summary bar */}
+          {compared && filteredResults[0] && (
+            <div className="bg-tertiary-500 rounded-2xl p-4 text-white">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp size={15} />
+                <p className="text-xs font-medium opacity-80">साथी की सलाह</p>
+              </div>
+              <p className="font-headline font-bold">
+                {filteredResults[0].bankName}
+              </p>
+              <div className="flex gap-4 mt-1.5 text-sm">
+                <span>
+                  ब्याज:{" "}
+                  <strong className="text-primary-300">
+                    {filteredResults[0].rate}%
+                  </strong>
+                </span>
+                <span>
+                  कमाई:{" "}
+                  <strong>
+                    {formatINR(filteredResults[0].interestEarned)}
+                  </strong>
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Results grid: 1 col mobile, 2 cols on lg */}
+          {compared ? (
+            filteredResults.length === 0 ? (
+              <div className="card text-center py-8 text-gray-500">
+                इस फ़िल्टर के लिए कोई बैंक नहीं मिला
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {filteredResults.map((bank, i) => (
+                  <BankCard
+                    key={bank.bankName + i}
+                    bank={bank}
+                    rank={i + 1}
+                    inputAmount={Number(amount)}
+                  />
+                ))}
+              </div>
+            )
+          ) : (
+            <div className="card text-center py-12">
+              <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">
+                राशि और अवधि चुनकर तुलना करें
+              </p>
+            </div>
           )}
         </div>
-      )}
-
-      {!compared && (
-        <div className="card text-center py-12">
-          <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">राशि और अवधि चुनकर तुलना करें</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

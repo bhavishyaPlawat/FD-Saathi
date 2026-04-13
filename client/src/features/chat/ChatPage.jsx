@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Send, Plus, Mic, X } from "lucide-react";
+import { Send, Plus, Mic } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useChatStore } from "../../stores/chatStore";
 import { useAuthStore } from "../../stores/authStore";
 import ReactMarkdown from "react-markdown";
 
-// ── Glossary card (shown when AI detects FD jargon) ─────────────
+// ── Glossary card ─────────────────────────────────────────────
 function GlossaryCard({ terms }) {
   if (!terms?.length) return null;
   return (
@@ -51,7 +51,7 @@ function Message({ msg, isStreaming }) {
         </div>
       )}
       <div
-        className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed
+        className={`max-w-[75%] md:max-w-[65%] px-4 py-3 rounded-2xl text-sm leading-relaxed
         ${
           isUser
             ? "bg-tertiary-500 text-white rounded-tr-sm"
@@ -113,7 +113,6 @@ export default function ChatPage() {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Pre-fill from HomePage quick action
   useEffect(() => {
     const prefill = sessionStorage.getItem("ds_prefill");
     if (prefill) {
@@ -126,7 +125,6 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Track glossary terms from last AI message
   useEffect(() => {
     const last = messages[messages.length - 1];
     if (last?.role === "assistant" && last.glossaryTerms?.length) {
@@ -155,9 +153,11 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-7.5rem)]">
+    /* Mobile: fixed height accounting for top header + bottom nav
+       Desktop: full remaining viewport height (sidebar handles nav) */
+    <div className="flex flex-col h-[calc(100vh-7.5rem)] md:h-screen">
       {/* ── Chat header ─────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100">
+      <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-bold">
             DS
@@ -210,7 +210,7 @@ export default function ChatPage() {
                 FD के बारे में कुछ भी पूछें
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-wrap gap-2 justify-center max-w-md">
               {SUGGESTIONS.map((q) => (
                 <button key={q} onClick={() => setInput(q)} className="chip">
                   {q}
@@ -232,10 +232,8 @@ export default function ChatPage() {
           />
         ))}
 
-        {/* Glossary card after last AI message */}
         {!isStreaming && <GlossaryCard terms={lastGlossary} />}
 
-        {/* Thinking indicator */}
         {isStreaming && messages[messages.length - 1]?.content === "" && (
           <div className="flex items-center gap-2 px-6 text-gray-400 text-sm">
             <div className="flex gap-1">
@@ -251,7 +249,6 @@ export default function ChatPage() {
           </div>
         )}
 
-        {/* Suggested chips after conversation starts */}
         {messages.length > 0 && !isStreaming && (
           <div className="flex gap-2 px-4 overflow-x-auto pb-2 mt-2">
             {SUGGESTIONS.slice(0, 3).map((q) => (
@@ -270,17 +267,16 @@ export default function ChatPage() {
       </div>
 
       {/* ── Input bar ────────────────────────────────────────── */}
-      <div className="px-4 py-3 bg-white border-t border-gray-100">
+      <div className="px-4 py-3 bg-white border-t border-gray-100 shrink-0">
         <div
           className="flex items-end gap-2 bg-gray-50 rounded-2xl px-3 py-2
                         border border-gray-200 focus-within:border-primary-400
-                        focus-within:ring-2 focus-within:ring-primary-100 transition-all"
+                        focus-within:ring-2 focus-within:ring-primary-100 transition-all
+                        max-w-3xl mx-auto"
         >
-          {/* Mic button */}
           <button className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-xl flex-shrink-0 self-center">
             <Mic size={18} />
           </button>
-
           <textarea
             ref={inputRef}
             rows={1}
@@ -291,7 +287,6 @@ export default function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-
           <button
             onClick={handleSend}
             disabled={!input.trim() || isStreaming}
