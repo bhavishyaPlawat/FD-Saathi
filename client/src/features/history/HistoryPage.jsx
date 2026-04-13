@@ -1,13 +1,38 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Trash2, MessageCircle } from "lucide-react";
+import { Trash2, MessageCircle, Search } from "lucide-react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../../stores/chatStore";
+
+function groupByDate(sessions) {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yest = new Date(today);
+  yest.setDate(yest.getDate() - 1);
+
+  const groups = {};
+  sessions.forEach((s) => {
+    const d = new Date(s.updatedAt);
+    const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    let label;
+    if (day >= today) label = "आज";
+    else if (day >= yest) label = "कल";
+    else {
+      const diff = Math.floor((today - day) / 86400000);
+      label = `${diff} दिन पहले`;
+    }
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(s);
+  });
+  return groups;
+}
 
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { sessions, fetchSessions, loadSession, deleteSession } =
     useChatStore();
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     fetchSessions();
@@ -24,13 +49,38 @@ export default function HistoryPage() {
     toast.success("बातचीत हटा दी गई");
   };
 
-  return (
-    <div className="px-4 py-6">
-      <h2 className="text-lg font-bold text-gray-800 mb-4">पुरानी बातचीत</h2>
+  const filtered = sessions.filter(
+    (s) => !query || s.title?.toLowerCase().includes(query.toLowerCase()),
+  );
 
-      {sessions.length === 0 ? (
+  const groups = groupByDate(filtered);
+
+  return (
+    <div className="px-4 py-5">
+      {/* Header */}
+      <h2 className="font-headline text-lg font-bold text-gray-800 mb-4">
+        स्मृति (Memory)
+      </h2>
+      <p className="text-sm text-gray-500 -mt-3 mb-4">आपकी पुरानी बातें</p>
+
+      {/* Search */}
+      <div className="relative mb-5">
+        <Search
+          size={16}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        />
+        <input
+          type="text"
+          className="input-base pl-9"
+          placeholder="खोजें..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+
+      {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <MessageCircle size={40} className="text-gray-300 mb-3" />
+          <MessageCircle size={40} className="text-gray-200 mb-3" />
           <p className="text-gray-500">अभी तक कोई बातचीत नहीं</p>
           <button
             onClick={() => navigate("/chat")}
@@ -40,33 +90,56 @@ export default function HistoryPage() {
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {sessions.map((s) => (
-            <div
-              key={s._id}
-              onClick={() => handleLoad(s._id)}
-              className="card flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
-                  <MessageCircle size={18} className="text-primary-500" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-medium text-sm text-gray-800 truncate">
-                    {s.title}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {s.messages?.length || 0} messages •{" "}
-                    {new Date(s.updatedAt).toLocaleDateString("hi-IN")}
-                  </p>
-                </div>
+        <div className="space-y-5">
+          {Object.entries(groups).map(([label, items]) => (
+            <div key={label}>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                {label}
+              </p>
+              <div className="space-y-2">
+                {items.map((s) => {
+                  const firstMsg =
+                    s.messages?.[0]?.content?.slice(0, 60) || s.title;
+                  const lang = s.messages?.[0]?.language || "hi";
+
+                  return (
+                    <div
+                      key={s._id}
+                      onClick={() => handleLoad(s._id)}
+                      className="card-hover flex items-center justify-between gap-3"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {/* Initial circle */}
+                        <div
+                          className="w-9 h-9 rounded-xl bg-primary-500 flex items-center
+                                        justify-center text-white font-bold text-sm flex-shrink-0"
+                        >
+                          {s.title?.[0]?.toUpperCase() || "F"}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm text-gray-800 truncate">
+                            {s.title}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-0.5 truncate">
+                            {firstMsg}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded uppercase">
+                          {lang}
+                        </span>
+                        <button
+                          onClick={(e) => handleDelete(e, s._id)}
+                          className="p-1.5 text-gray-300 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <button
-                onClick={(e) => handleDelete(e, s._id)}
-                className="p-2 text-gray-400 hover:text-red-500 transition-colors ml-2"
-              >
-                <Trash2 size={16} />
-              </button>
             </div>
           ))}
         </div>
