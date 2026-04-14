@@ -6,7 +6,7 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(env.MONGODB_URI, {
       // These are the recommended options for mongoose 8+
-      serverSelectionTimeoutMS: 5000, // timeout after 5s
+      serverSelectionTimeoutMS: 15000, // timeout after 15s
       socketTimeoutMS: 45000, // close sockets after 45s
     });
 
