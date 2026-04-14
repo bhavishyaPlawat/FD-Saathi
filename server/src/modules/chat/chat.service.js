@@ -2,7 +2,7 @@ const { ChatSession } = require("../../models/ChatSession.model");
 const { aiProvider } = require("../../services/ai");
 const { ragService } = require("../rag/rag.service");
 const mongoose = require("mongoose");
-const { logger } = require("../../utils/logger"); // adjust path to your winston logger
+const { logger } = require("../../utils/logger");
 
 // Devanagari unicode range — used to sanity-check Hindi responses
 const DEVANAGARI_REGEX = /[\u0900-\u097F]/g;
@@ -13,10 +13,21 @@ const SCRIPT_VALIDATED_LANGS = new Set(["hi", "mr"]);
 
 class ChatService {
   /**
-   * Stream a chat response over SSE.
-   * Writes SSE events directly to `res`.
+   * Stream a chat response over SSE with enhanced RAG and language detection.
+   *
+   * NEW FEATURES:
+   * 1. Auto-detects language from user message (overrides profile language)
+   * 2. Three-tier RAG: static knowledge + conversational memory + recent context
+   * 3. Stores conversation pairs as vectors for future retrieval
    */
-  async streamMessage(sessionId, userId, userMessage, language, userName, res) {
+  async streamMessage(
+    sessionId,
+    userId,
+    userMessage,
+    profileLanguage,
+    userName,
+    res,
+  ) {
     // 1. Get or create session
     let session = sessionId
       ? await ChatSession.findOne({ _id: sessionId, userId })
@@ -32,19 +43,61 @@ class ChatService {
       });
     }
 
-    // 2. RAG retrieval — now includes hasReliableContext flag
-    const ragContext = await ragService.retrieve(userMessage, language);
+    // 2. LANGUAGE DETECTION (NEW)
+    // Detect actual language from message, fallback to profile language
+    let detectedLanguage;
+    try {
+      detectedLanguage = await aiProvider.detectLanguage(
+        userMessage,
+        profileLanguage,
+      );
 
-    // Log when retrieval confidence is low — useful for tuning your data
+      logger.info("Language detected", {
+        userMessage: userMessage.slice(0, 50),
+        detected: detectedLanguage,
+        profile: profileLanguage,
+      });
+    } catch (err) {
+      logger.warn("Language detection failed, using profile language", {
+        error: err.message,
+      });
+      detectedLanguage = profileLanguage;
+    }
+
+    // Use detected language for this response
+    const responseLanguage = detectedLanguage;
+
+    // 3. THREE-TIER RAG RETRIEVAL (ENHANCED)
+    // Retrieves from:
+    // - Static knowledge base (FD rates, tax info)
+    // - Conversational memory (previous user-AI exchanges)
+    // - Recent messages from DB (context continuity)
+    const ragContext = await ragService.retrieve(
+      userMessage,
+      responseLanguage,
+      session._id.toString(),
+      userId,
+    );
+
+    // Log retrieval stats for monitoring
+    logger.info("RAG retrieval completed", {
+      staticMatches: ragContext.staticMatches,
+      conversationMatches: ragContext.conversationMatches,
+      hasReliableContext: ragContext.hasReliableContext,
+      language: responseLanguage,
+    });
+
+    // Warn if retrieval confidence is low
     if (!ragContext.hasReliableContext) {
       logger.warn("Low RAG confidence", {
         query: userMessage,
-        language,
-        matchCount: ragContext.chunks.length,
+        language: responseLanguage,
+        staticMatches: ragContext.staticMatches,
+        conversationMatches: ragContext.conversationMatches,
       });
     }
 
-    // 3. Build messages array (last 10 for context window)
+    // 4. Build messages array (last 10 for context window)
     const historyMessages = session.messages.slice(-10).map((m) => ({
       role: m.role,
       content: m.content,
@@ -55,31 +108,33 @@ class ChatService {
       { role: "user", content: userMessage },
     ];
 
-    // 4. Build system prompt with RAG context
+    // 5. Build system prompt with detected language
     const systemPrompt = ragService.buildSystemPrompt(
       ragContext,
-      language,
+      responseLanguage,
       userName,
     );
 
-    // 5. Set SSE headers
+    // 6. Set SSE headers
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
     res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
 
-    // Send session ID first so client knows which session this belongs to
+    // Send session ID and detected language
     res.write(
-      `data: ${JSON.stringify({ type: "session", sessionId: session._id })}\n\n`,
+      `data: ${JSON.stringify({
+        type: "session",
+        sessionId: session._id,
+        detectedLanguage: responseLanguage, // Send detected language to frontend
+      })}\n\n`,
     );
 
     let fullResponse = "";
-    // Buffer for the tail of the stream — we hold back the last ~100 chars
-    // to prevent GLOSSARY_TERMS from being rendered in the UI live.
-    // We flush it only after we've confirmed it contains no glossary line.
+    // Buffer for the tail of the stream
     let streamBuffer = "";
-    const BUFFER_SIZE = 120; // slightly longer than "GLOSSARY_TERMS: " + typical terms
+    const BUFFER_SIZE = 120;
 
     try {
       for await (const chunk of aiProvider.streamChat(
@@ -143,44 +198,42 @@ class ChatService {
       return;
     }
 
-    // 6. Extract glossary terms from the full response
+    // 7. Extract glossary terms from the full response
     const glossaryMatch = fullResponse.match(/GLOSSARY_TERMS:\s*(.+)/);
     const glossaryTerms = glossaryMatch
       ? glossaryMatch[1].split(",").map((t) => t.trim())
       : [];
     const cleanResponse = fullResponse.replace(/GLOSSARY_TERMS:.+/, "").trim();
 
-    // 7. Hindi/script quality check — log if response looks wrong-language
-    if (SCRIPT_VALIDATED_LANGS.has(language)) {
+    // 8. Script quality check for Hindi/Marathi responses
+    if (SCRIPT_VALIDATED_LANGS.has(responseLanguage)) {
       const devanagariCount = (cleanResponse.match(DEVANAGARI_REGEX) || [])
         .length;
       if (devanagariCount < MIN_HINDI_CHARS) {
         logger.warn(
           "Script quality check failed — expected Devanagari response",
           {
-            language,
+            language: responseLanguage,
             devanagariCount,
             userId,
             preview: cleanResponse.slice(0, 100),
           },
         );
-        // Note: we still save and return the response rather than erroring.
-        // Use these logs to tune your system prompt over time.
       }
     }
 
-    // 8. Save both messages to MongoDB
+    // 9. Save both messages to MongoDB
     session.messages.push(
       {
         role: "user",
         content: userMessage,
-        language,
+        language: responseLanguage, // Save detected language
         timestamp: new Date(),
       },
       {
         role: "assistant",
         content: cleanResponse,
-        language,
+        language: responseLanguage,
         glossaryTerms,
         timestamp: new Date(),
       },
@@ -192,13 +245,37 @@ class ChatService {
 
     await session.save();
 
-    // 9. Send done event — now includes sources so frontend can show citations
+    // 10. STORE CONVERSATIONAL MEMORY (NEW)
+    // Store the user-AI exchange as a vector for future retrieval
+    try {
+      await ragService.storeConversationPair(
+        userMessage,
+        cleanResponse,
+        session._id.toString(),
+        userId,
+        responseLanguage,
+      );
+
+      logger.info("Conversation pair stored in vector DB", {
+        sessionId: session._id,
+        language: responseLanguage,
+      });
+    } catch (err) {
+      // Non-critical: log but don't fail the request
+      logger.error("Failed to store conversation pair", {
+        error: err.message,
+        sessionId: session._id,
+      });
+    }
+
+    // 11. Send done event with all metadata
     res.write(
       `data: ${JSON.stringify({
         type: "done",
         glossaryTerms,
-        sources: ragContext.sources, // ← was retrieved but never sent before
-        hasReliableContext: ragContext.hasReliableContext, // ← lets frontend show a caveat badge
+        sources: ragContext.sources,
+        hasReliableContext: ragContext.hasReliableContext,
+        detectedLanguage: responseLanguage, // Include in done event too
         sessionId: session._id,
       })}\n\n`,
     );

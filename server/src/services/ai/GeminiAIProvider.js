@@ -47,6 +47,51 @@ class GeminiAIProvider {
 
     return response.text;
   }
+
+  /**
+   * Detects the primary language of the given text.
+   * Returns language code: 'hi', 'en', 'mr', 'bn', 'te'
+   * Falls back to user's profile language if detection is uncertain.
+   */
+  async detectLanguage(text, fallbackLang = "hi") {
+    try {
+      const response = await this.ai.models.generateContent({
+        model: this.model,
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `Analyze this text and return ONLY the language code (hi/en/mr/bn/te):
+"${text}"
+
+Rules:
+- hi = Hindi/Devanagari script
+- en = English
+- mr = Marathi
+- bn = Bengali
+- te = Telugu
+- If mixed, return the dominant language
+- If uncertain, return "en"
+- Return ONLY the 2-letter code, nothing else`,
+              },
+            ],
+          },
+        ],
+        config: {
+          temperature: 0.1, // Low temperature for deterministic detection
+        },
+      });
+
+      const detected = response.text.trim().toLowerCase();
+      const validLangs = ["hi", "en", "mr", "bn", "te"];
+
+      return validLangs.includes(detected) ? detected : fallbackLang;
+    } catch (err) {
+      // If detection fails, return fallback
+      return fallbackLang;
+    }
+  }
 }
 
 module.exports = { GeminiAIProvider };
