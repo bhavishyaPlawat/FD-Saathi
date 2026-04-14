@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import api from "../services/api";
+import API_BASE_URL from "../config/apiBaseUrl";
 
 export const useChatStore = create((set, get) => ({
   sessions: [],
@@ -48,21 +49,18 @@ export const useChatStore = create((set, get) => ({
 
     const token = localStorage.getItem("token");
 
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL || "http://localhost:5001/api"}/chat/stream`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          sessionId: activeSession?._id || null,
-          message,
-          language,
-        }),
+    const response = await fetch(`${API_BASE_URL}/chat/stream`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
+      body: JSON.stringify({
+        sessionId: activeSession?._id || null,
+        message,
+        language,
+      }),
+    });
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
