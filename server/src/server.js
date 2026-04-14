@@ -12,23 +12,28 @@ const startServer = async () => {
 
   // 3. Start listening
   const server = app.listen(env.PORT, () => {
-    logger.info(`🚀  Server running on http://localhost:${env.PORT}`);
-    logger.info(`📌  Environment: ${env.NODE_ENV}`);
-    logger.info(`🌐  Accepting requests from: ${env.CLIENT_URL}`);
+    const allowedOrigins = [
+      env.CLIENT_URL_PRODUCTION,
+      env.CLIENT_URL_DEVELOPMENT,
+    ];
+
+    logger.info(`Server running on http://localhost:${env.PORT}`);
+    logger.info(`Environment: ${env.NODE_ENV}`);
+    logger.info(`Accepting requests from: ${allowedOrigins.join(", ")}`);
   });
 
-  // ── Graceful shutdown ────────────────────────────────────────────────────
+  // Graceful shutdown
   // When Ctrl+C or Docker stop is issued, close connections cleanly
   const shutdown = (signal) => {
-    logger.info(`\n${signal} received — shutting down gracefully...`);
+    logger.info(`\n${signal} received - shutting down gracefully...`);
     server.close(() => {
-      logger.info("✅  HTTP server closed");
+      logger.info("HTTP server closed");
       process.exit(0);
     });
 
     // Force exit if server hasn't closed in 10s
     setTimeout(() => {
-      logger.error("❌  Forced shutdown after timeout");
+      logger.error("Forced shutdown after timeout");
       process.exit(1);
     }, 10_000);
   };
@@ -36,7 +41,7 @@ const startServer = async () => {
   process.on("SIGTERM", () => shutdown("SIGTERM"));
   process.on("SIGINT", () => shutdown("SIGINT"));
 
-  // ── Unhandled errors ─────────────────────────────────────────────────────
+  // Unhandled errors
   process.on("unhandledRejection", (reason) => {
     logger.error("Unhandled Promise Rejection:", reason);
     // Don't crash in development, crash in production

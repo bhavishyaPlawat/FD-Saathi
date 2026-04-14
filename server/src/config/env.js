@@ -1,6 +1,8 @@
 const { z } = require("zod");
 require("dotenv").config();
 
+const normalizeUrl = (url) => url.replace(/\/+$/, "");
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
@@ -19,7 +21,10 @@ const envSchema = z.object({
   PINECONE_INDEX: z.string().default("digital-saathi"),
   PINECONE_ENVIRONMENT: z.string().default("us-east-1"),
 
-  CLIENT_URL: z.string().default("http://localhost:5173"),
+  CLIENT_URL_PRODUCTION: z
+    .string()
+    .default("https://fd-saarthi.vercel.app"),
+  CLIENT_URL_DEVELOPMENT: z.string().default("http://localhost:5173"),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -34,5 +39,9 @@ if (!parsed.success) {
   process.exit(1);
 }
 
-const env = Object.freeze(parsed.data);
+const env = Object.freeze({
+  ...parsed.data,
+  CLIENT_URL_PRODUCTION: normalizeUrl(parsed.data.CLIENT_URL_PRODUCTION),
+  CLIENT_URL_DEVELOPMENT: normalizeUrl(parsed.data.CLIENT_URL_DEVELOPMENT),
+});
 module.exports = { env };

@@ -14,6 +14,10 @@ const chatRoutes = require("./modules/chat/chat.routes");
 
 const createApp = () => {
   const app = express();
+  const allowedOrigins = [
+    env.CLIENT_URL_PRODUCTION,
+    env.CLIENT_URL_DEVELOPMENT,
+  ];
 
   // ── Security headers ──────────────────────────────────────────────────────
   app.use(helmet());
@@ -21,7 +25,20 @@ const createApp = () => {
   // ── CORS ──────────────────────────────────────────────────────────────────
   app.use(
     cors({
-      origin: env.CLIENT_URL,
+      origin: (origin, callback) => {
+        if (!origin) {
+          callback(null, true);
+          return;
+        }
+
+        const normalizedOrigin = origin.replace(/\/+$/, "");
+        if (allowedOrigins.includes(normalizedOrigin)) {
+          callback(null, true);
+          return;
+        }
+
+        callback(new Error("Not allowed by CORS"));
+      },
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
