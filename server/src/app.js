@@ -49,6 +49,11 @@ const createApp = () => {
   app.use(express.json({ limit: "10kb" }));
   app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
+  //default api end point
+  app.get("/", (req, res) => {
+    res.send("FD-Saarthi backend is running!");
+  });
+
   // ── Health check (BEFORE rate limiter) ─────────────────────────────────────
   app.get("/health", (req, res) => {
     console.log("🔍 /health endpoint hit");
