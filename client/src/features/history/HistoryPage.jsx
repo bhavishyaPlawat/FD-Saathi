@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Trash2, MessageCircle, Search } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useChatStore } from "../../stores/chatStore";
 
-function groupByDate(sessions) {
+function groupByDate(sessions, t) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yest = new Date(today);
@@ -16,11 +17,11 @@ function groupByDate(sessions) {
     const d = new Date(s.updatedAt);
     const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     let label;
-    if (day >= today) label = "आज";
-    else if (day >= yest) label = "कल";
+    if (day >= today) label = t("general.today", "आज");
+    else if (day >= yest) label = t("general.yesterday", "कल");
     else {
       const diff = Math.floor((today - day) / 86400000);
-      label = `${diff} दिन पहले`;
+      label = t("general.daysAgo", "{{count}} दिन पहले", { count: diff });
     }
     if (!groups[label]) groups[label] = [];
     groups[label].push(s);
@@ -29,6 +30,7 @@ function groupByDate(sessions) {
 }
 
 export default function HistoryPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { sessions, fetchSessions, loadSession, deleteSession } =
     useChatStore();
@@ -46,22 +48,22 @@ export default function HistoryPage() {
   const handleDelete = async (e, id) => {
     e.stopPropagation();
     await deleteSession(id);
-    toast.success("बातचीत हटा दी गई");
+    toast.success(t("history.deleted", "बातचीत हटा दी गई"));
   };
 
   const filtered = sessions.filter(
     (s) => !query || s.title?.toLowerCase().includes(query.toLowerCase()),
   );
 
-  const groups = groupByDate(filtered);
+  const groups = groupByDate(filtered, t);
 
   return (
     <div className="px-4 py-5">
       {/* Header */}
       <h2 className="font-headline text-lg font-bold text-gray-800 mb-4">
-        स्मृति (Memory)
+        {t("history.title", "स्मृति (Memory)")}
       </h2>
-      <p className="text-sm text-gray-500 -mt-3 mb-4">आपकी पुरानी बातें</p>
+      <p className="text-sm text-gray-500 -mt-3 mb-4">{t("history.subtitle", "आपकी पुरानी बातें")}</p>
 
       {/* Search */}
       <div className="relative mb-5">
@@ -72,7 +74,7 @@ export default function HistoryPage() {
         <input
           type="text"
           className="input-base pl-9"
-          placeholder="खोजें..."
+          placeholder={t("history.searchPlaceholder", "खोजें...")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -81,12 +83,12 @@ export default function HistoryPage() {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <MessageCircle size={40} className="text-gray-200 mb-3" />
-          <p className="text-gray-500">अभी तक कोई बातचीत नहीं</p>
+          <p className="text-gray-500">{t("history.noChats", "अभी तक कोई बातचीत नहीं")}</p>
           <button
             onClick={() => navigate("/chat")}
             className="btn-primary mt-4 text-sm"
           >
-            पहली बातचीत शुरू करें
+            {t("history.startFirst", "पहली बातचीत शुरू करें")}
           </button>
         </div>
       ) : (

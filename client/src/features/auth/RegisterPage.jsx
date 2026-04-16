@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { Languages } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 
 const LANGUAGES = [
@@ -12,6 +14,7 @@ const LANGUAGES = [
 ];
 
 export default function RegisterPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { register, isLoading } = useAuthStore();
   const [form, setForm] = useState({
@@ -25,7 +28,7 @@ export default function RegisterPage() {
     e.preventDefault();
     const result = await register(form);
     if (result.success) {
-      toast.success("अकाउंट बन गया! 🎉");
+      toast.success(t("auth.registerSuccess", "Account created! 🎉"));
       navigate("/");
     } else {
       toast.error(result.message);
@@ -35,7 +38,16 @@ export default function RegisterPage() {
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col md:flex-row">
+    <div className="min-h-screen bg-surface flex flex-col md:flex-row relative">
+      {/* ── Floating Language Toggle ── */}
+      <button 
+        onClick={() => i18n.changeLanguage(i18n.language === "en" ? "hi" : "en")}
+        className="absolute top-4 right-4 md:right-8 bg-white/50 backdrop-blur-md md:bg-white border border-gray-200 md:shadow-md px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold text-gray-700 z-10 hover:bg-white transition-colors"
+      >
+        <Languages size={16} className="text-primary-600" />
+        {i18n.language === "en" ? "हिंदी" : "English"}
+      </button>
+
       {/* ── Desktop left panel ─────────────────────────────────── */}
       <div className="hidden md:flex md:w-2/5 bg-tertiary-500 flex-col items-center justify-center px-10 py-16 text-white">
         <div className="w-20 h-20 rounded-3xl bg-primary-500 flex items-center justify-center mb-6 shadow-xl">
@@ -57,14 +69,14 @@ export default function RegisterPage() {
           Digital Saathi
         </h1>
         <p className="text-white/60 text-center text-sm max-w-xs">
-          अपना मुफ़्त अकाउंट बनाएं और FD की दुनिया को समझें
+          {t("auth.digitalSaathiDesc", "अपना मुफ़्त अकाउंट बनाएं और FD की दुनिया को समझें")}
         </p>
 
         <div className="mt-10 space-y-3 w-full max-w-xs">
           {[
-            { emoji: "🌐", text: "5 भाषाओं में सपोर्ट" },
-            { emoji: "🔒", text: "आपका डेटा सुरक्षित है" },
-            { emoji: "💰", text: "बेस्ट FD रेट खोजें" },
+            { emoji: "🌐", text: t("auth.features.support", "5 भाषाओं में सपोर्ट") },
+            { emoji: "🔒", text: t("auth.features.secure", "आपका डेटा सुरक्षित है") },
+            { emoji: "💰", text: t("auth.features.bestRate", "बेस्ट FD रेट खोजें") },
           ].map(({ emoji, text }) => (
             <div
               key={text}
@@ -98,7 +110,7 @@ export default function RegisterPage() {
           </div>
           <h1 className="font-headline text-2xl font-bold">Digital Saathi</h1>
           <p className="text-white/70 text-sm mt-1">
-            अपनी भाषा चुनें · We'll talk in your language
+            {t("auth.welcomeSubtitle", "अपनी भाषा चुनें · We'll talk in your language")}
           </p>
         </div>
 
@@ -107,18 +119,18 @@ export default function RegisterPage() {
           <div className="w-full max-w-sm -mt-10 md:mt-0 pb-10 md:pb-0">
             <div className="card shadow-lg md:shadow-xl">
               <h2 className="font-headline text-lg font-bold text-gray-800 mb-5">
-                नया अकाउंट बनाएं
+                {t("auth.createAccount", "नया अकाउंट बनाएं")}
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">
-                    नाम
+                    {t("auth.name", "नाम")}
                   </label>
                   <input
                     type="text"
                     className="input-base"
-                    placeholder="आपका नाम"
+                    placeholder={t("auth.namePlaceholder", "आपका नाम")}
                     value={form.name}
                     onChange={(e) => set("name", e.target.value)}
                     required
@@ -127,7 +139,7 @@ export default function RegisterPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">
-                    फ़ोन नंबर
+                    {t("auth.phone", "फ़ोन नंबर")}
                   </label>
                   <input
                     type="tel"
@@ -143,12 +155,12 @@ export default function RegisterPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">
-                    पासवर्ड
+                    {t("auth.password", "पासवर्ड")}
                   </label>
                   <input
                     type="password"
                     className="input-base"
-                    placeholder="कम से कम 6 अक्षर"
+                    placeholder={t("auth.passwordPlaceholder", "कम से कम 6 अक्षर")}
                     value={form.password}
                     onChange={(e) => set("password", e.target.value)}
                     required
@@ -158,7 +170,7 @@ export default function RegisterPage() {
                 {/* Language picker */}
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-2">
-                    अपनी भाषा चुनें
+                    {t("auth.language", "अपनी भाषा चुनें")}
                   </label>
                   <div className="space-y-2">
                     {LANGUAGES.map((l) => (
@@ -208,14 +220,14 @@ export default function RegisterPage() {
                   disabled={isLoading}
                   className="btn-primary w-full mt-2"
                 >
-                  {isLoading ? "बन रहा है..." : "आगे बढ़ें →"}
+                  {isLoading ? t("auth.creating", "बन रहा है...") : t("auth.proceed", "आगे बढ़ें →")}
                 </button>
               </form>
 
               <p className="text-center text-sm text-gray-500 mt-5">
-                पहले से अकाउंट है?{" "}
+                {t("auth.alreadyHaveAccount", "पहले से अकाउंट है?")}{" "}
                 <Link to="/login" className="text-primary-600 font-semibold">
-                  लॉगिन करें
+                  {t("auth.loginLink", "लॉगिन करें")}
                 </Link>
               </p>
             </div>

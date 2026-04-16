@@ -1,12 +1,13 @@
 {
   "app": {
     "name": "Digital Saathi",
-    "tagline": "Your Financial Companion"
+    "tagline": "Your Financial Companion",
+    "subtitle": "Your Companion"
   },
   "nav": {
     "home": "Home",
     "chat": "Ask Questions",
-    "compare": "Compare FDs",
+    "compare": "Compare",
     "history": "History",
     "profile": "Profile"
   },
@@ -14,27 +15,168 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "phone": "Phone Number",
+    "phone": "Phone",
     "password": "Password",
     "name": "Name",
-    "language": "Choose Language"
+    "language": "Choose Language",
+    "registerSuccess": "Account created! 🎉",
+    "digitalSaathiDesc": "Create your free account and discover the world of FDs",
+    "features": {
+      "support": "Support in 5 languages",
+      "secure": "Your data is secure",
+      "bestRate": "Find best FD rates",
+      "compare": "Compare all bank rates",
+      "ai": "Ask AI anytime"
+    },
+    "welcomeSubtitle": "Choose your language",
+    "createAccount": "Create new account",
+    "namePlaceholder": "Your name",
+    "passwordPlaceholder": "At least 6 characters",
+    "creating": "Creating...",
+    "proceed": "Proceed →",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Login",
+    "loginSuccess": "Welcome! 🙏",
+    "loginSubtitle": "FD Info in your language",
+    "loggingIn": "Logging in...",
+    "newAccount": "New account?"
+  },
+  "home": {
+    "greeting": "Hello 👋",
+    "subtitle": "Which FD do you want to understand today?",
+    "askPlaceholder": "Ask about FDs...",
+    "quickLabel": "Quick Questions",
+    "quick": {
+      "q1": {
+        "title": "What is FD?",
+        "desc": "Basic info"
+      },
+      "q2": {
+        "title": "How to get interest?",
+        "desc": "Calculation"
+      },
+      "q3": {
+        "title": "Which Bank?",
+        "desc": "Compare"
+      },
+      "q4": {
+        "title": "How to Book?",
+        "desc": "Process"
+      }
+    },
+    "adviceTitle": "Advice",
+    "adviceDesc": "Instead of savings, earn up to 7.5% in a 1Y FD.",
+    "todayRates": "Today Rates"
+  },
+  "profile": {
+    "langSuccess": "Language changed",
+    "changeLang": "Change language"
+  },
+  "general": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{count}} days ago"
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "Your past chats",
+    "searchPlaceholder": "Search...",
+    "noChats": "No chats yet",
+    "startFirst": "Start chat",
+    "deleted": "Deleted"
   },
   "chat": {
-    "placeholder": "Ask anything about FDs...",
+    "placeholder": "Ask anything...",
     "send": "Send",
-    "newChat": "New Chat",
-    "thinking": "Thinking..."
+    "newChat": "New",
+    "thinking": "Thinking...",
+    "alwaysAvailable": "Always available",
+    "hello": "Hello, {{name}}!",
+    "askAnything": "Ask about FD",
+    "sug1": "What is FD?",
+    "sug2": "Best FD?",
+    "sug3": "What is TDS?",
+    "sug4": "Senior citizen benefits?",
+    "sug5": "How to open FD?"
   },
   "compare": {
-    "title": "Compare FD Rates",
-    "amount": "Amount (₹)",
-    "tenor": "Tenor",
-    "senior": "Senior Citizen",
-    "compare": "Compare",
-    "maturity": "Maturity Amount",
-    "interest": "Interest Earned"
+    "title": "Compare FDs",
+    "subtitle": "View all rates together",
+    "filters": {
+      "all": "All",
+      "govt": "Govt",
+      "private": "Private",
+      "sf": "Small Finance"
+    },
+    "highestInterest": "Highest Interest",
+    "perYear": "Per Year",
+    "minAmount": "Min",
+    "months": "Months",
+    "interestEarned": "Interest Earned",
+    "maturityAmount": "Maturity Amount",
+    "showLess": "Show Less",
+    "viewDetails": "View Details",
+    "investAmount": "Invest Amount",
+    "dicgc": "DICGC Insured up to ₹5L",
+    "errorMinAmount": "Min ₹1000",
+    "errorCompare": "Error, try again",
+    "amountLabel": "Amount (₹)",
+    "amountPlaceholder": "e.g.: 100000",
+    "tenorLabel": "Select Tenor",
+    "seniorToggle": "Senior Citizen",
+    "seniorDesc": "60+ yrs — Extra interest",
+    "comparingBtn": "Comparing...",
+    "compareBtn": "Compare",
+    "interestLbl": "Interest: ",
+    "earningsLbl": "Earnings: ",
+    "noBankFound": "No banks found",
+    "selectToCompare": "Select amount and tenor to compare"
   },
   "errors": {
-    "generic": "Something went wrong, please try again"
+    "generic": "There was an error"
+  },
+  "emergency": {
+    "title": "Emergency Funds",
+    "subtitle": "Break FD or take an Overdraft? Find the best option",
+    "inputsLabel": "Enter FD Details",
+    "needAmount": "Amount needed? (₹)",
+    "fdAmount": "FD Principal (₹)",
+    "fdRate": "FD Interest Rate (%)",
+    "daysElapsed": "Days since FD opened?",
+    "daysRemaining": "Days remaining for maturity?",
+    "calculate": "Calculate",
+    "odLimit": "OD generally up to 90% of FD amount. Consider breaking instead.",
+    "recOD": "Recommendation: FD Overdraft (Loan) is better",
+    "recBreak": "Recommendation: Breaking FD is better",
+    "costBreak": "Estimated Loss on Breaking",
+    "breakInfo": "Penalty + Interest loss",
+    "costOD": "Estimated Cost of Loan",
+    "odInfo": "Interest to be paid on loan",
+    "descOD": "Taking a loan will result in less overall loss because a large portion of your FD will continue earning interest.",
+    "descBreak": "The interest on the loan would be more than the penalty of breaking the FD. Breaking is the right choice."
+  },
+  "openFd": {
+    "title": "Open New FD",
+    "subtitle": "Guide to opening an FD online or at a branch",
+    "onlineTab": "Online",
+    "branchTab": "Branch Visit",
+    "onlineSteps": "How to open FD online?",
+    "comingSoon": "Coming Soon",
+    "step1": "Select Bank",
+    "step1Desc": "Choose your preferred bank with the best rates.",
+    "goCompare": "View Rates",
+    "step2": "Complete KYC",
+    "step2Desc": "Provide Aadhar and PAN details.",
+    "step3": "Make Payment",
+    "step3Desc": "Pay via UPI or NetBanking to get the FD receipt.",
+    "quickLinks": "Direct Bank Links",
+    "docChecklist": "Documents before branch visit",
+    "docDesc": "Keep the following documents ready before visiting the branch:",
+    "doc1": "Aadhar Card (Original and Photocopy)",
+    "doc2": "PAN Card",
+    "doc3": "2 Passport Size Photos",
+    "doc4": "Passbook or Cancelled Cheque",
+    "doc5": "Proof of Address (Electricity bill, if necessary)",
+    "branchTip": "Before going to the branch, use our app to check which bank is giving the highest interest so you get the best return."
   }
 }

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useChatStore } from "../../stores/chatStore";
 import { useAuthStore } from "../../stores/authStore";
+import i18n from "../../i18n";
 import ReactMarkdown from "react-markdown";
 
 // ── Glossary card ─────────────────────────────────────────────
@@ -95,11 +96,11 @@ function Message({ msg, isStreaming }) {
 
 // ── Suggested chips ────────────────────────────────────────────
 const SUGGESTIONS = [
-  "FD क्या है?",
-  "सबसे अच्छी FD कहाँ है?",
-  "TDS क्या होता है?",
-  "Senior citizen को क्या फायदा है?",
-  "FD कैसे खुलती है?",
+  { key: "chat.sug1", text: "FD क्या है?" },
+  { key: "chat.sug2", text: "सबसे अच्छी FD कहाँ है?" },
+  { key: "chat.sug3", text: "TDS क्या होता है?" },
+  { key: "chat.sug4", text: "Senior citizen को क्या फायदा है?" },
+  { key: "chat.sug5", text: "FD कैसे खुलती है?" },
 ];
 
 export default function ChatPage() {
@@ -110,8 +111,50 @@ export default function ChatPage() {
 
   const [input, setInput] = useState("");
   const [lastGlossary, setLastGlossary] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [voiceModeActive, setVoiceModeActive] = useState(false);
+  const recognitionRef = useRef(null);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const SpeechReg = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechReg) {
+      recognitionRef.current = new SpeechReg();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+
+      recognitionRef.current.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        setInput(text);
+        setVoiceModeActive(true); // Voice input used, reading out reply
+      };
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+      };
+    }
+
+    return () => {
+      window.speechSynthesis.cancel();
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
+
+  const toggleMic = () => {
+    if (!recognitionRef.current) {
+      toast.error(t("errors.generic", "Voice input not supported"));
+      return;
+    }
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.lang = i18n.language === "hi" ? "hi-IN" : "en-IN";
+      recognitionRef.current.start();
+      setIsRecording(true);
+    }
+  };
 
   useEffect(() => {
     const prefill = sessionStorage.getItem("ds_prefill");
@@ -130,11 +173,21 @@ export default function ChatPage() {
     if (last?.role === "assistant" && last.glossaryTerms?.length) {
       setLastGlossary(last.glossaryTerms);
     }
-  }, [messages]);
+    if (!isStreaming && voiceModeActive && messages.length > 0) {
+      if (last?.role === "assistant" && last?.content) {
+        const textToRead = last.content.replace(/[*#]/g, "").replace(/GLOSSARY_TERMS:.*/gi, "");
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = i18n.language === "hi" ? "hi-IN" : "en-IN";
+        window.speechSynthesis.speak(utterance);
+        setVoiceModeActive(false); 
+      }
+    }
+  }, [messages, isStreaming, voiceModeActive]);
 
   const handleSend = async () => {
     const msg = input.trim();
     if (!msg || isStreaming) return;
+    window.speechSynthesis.cancel(); // stop current reading
     setInput("");
     setLastGlossary([]);
     inputRef.current?.focus();
@@ -166,7 +219,7 @@ export default function ChatPage() {
             <p className="font-semibold text-gray-800 text-sm">FD Saathi</p>
             <p className="text-xs text-primary-500 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse inline-block" />
-              हमेशा उपलब्ध
+              {t("chat.alwaysAvailable", "हमेशा उपलब्ध")}
             </p>
           </div>
         </div>
@@ -204,16 +257,16 @@ export default function ChatPage() {
             </div>
             <div>
               <p className="font-headline font-bold text-gray-800 text-lg">
-                नमस्ते, {user?.name}!
+                {t("chat.hello", "नमस्ते, {{name}}!", { name: user?.name })}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                FD के बारे में कुछ भी पूछें
+                {t("chat.askAnything", "FD के बारे में कुछ भी पूछें")}
               </p>
             </div>
             <div className="flex flex-wrap gap-2 justify-center max-w-md">
               {SUGGESTIONS.map((q) => (
-                <button key={q} onClick={() => setInput(q)} className="chip">
-                  {q}
+                <button key={q.key} onClick={() => setInput(t(q.key, q.text))} className="chip">
+                  {t(q.key, q.text)}
                 </button>
               ))}
             </div>
@@ -253,11 +306,11 @@ export default function ChatPage() {
           <div className="flex gap-2 px-4 overflow-x-auto pb-2 mt-2">
             {SUGGESTIONS.slice(0, 3).map((q) => (
               <button
-                key={q}
-                onClick={() => setInput(q)}
+                key={q.key}
+                onClick={() => setInput(t(q.key, q.text))}
                 className="chip flex-shrink-0"
               >
-                {q}
+                {t(q.key, q.text)}
               </button>
             ))}
           </div>
@@ -267,14 +320,38 @@ export default function ChatPage() {
       </div>
 
       {/* ── Input bar ────────────────────────────────────────── */}
-      <div className="px-4 py-3 bg-white border-t border-gray-100 shrink-0">
+      <div className="px-4 py-3 bg-white border-t border-gray-100 shrink-0 relative">
+        {/* Siri-like listening indicator overlay */}
+        {isRecording && (
+          <div className="absolute -top-12 left-0 right-0 flex justify-center items-end pointer-events-none pb-2">
+            <div className="flex items-center gap-1.5 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-primary-100">
+              <span className="text-xs font-bold text-primary-500 mr-2">{t("chat.listening", "सुन रहा हूँ...")}</span>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="w-1.5 bg-primary-500 rounded-full animate-pulse"
+                  style={{
+                    height: `${Math.max(8, Math.random() * 24)}px`,
+                    animationDuration: `${0.5 + Math.random() * 0.5}s`,
+                    animationDelay: `${Math.random() * 0.5}s`
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
         <div
           className="flex items-end gap-2 bg-gray-50 rounded-2xl px-3 py-2
                         border border-gray-200 focus-within:border-primary-400
                         focus-within:ring-2 focus-within:ring-primary-100 transition-all
                         max-w-3xl mx-auto"
         >
-          <button className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-xl flex-shrink-0 self-center">
+          <button
+            onClick={toggleMic}
+            className={`p-1.5 rounded-xl flex-shrink-0 self-center transition-colors ${
+              isRecording ? "text-red-500 bg-red-50 animate-pulse" : "text-primary-500 hover:bg-primary-50"
+            }`}
+          >
             <Mic size={18} />
           </button>
           <textarea

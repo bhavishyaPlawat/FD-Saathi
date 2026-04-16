@@ -23,8 +23,12 @@ class FDService {
 
     return rates.map((bank) => {
       const rate = isSenior ? bank.rateSenior : bank.rateGeneral;
-      const interest = (amount * rate * tenorMonths) / (12 * 100);
-      const maturity = amount + interest;
+      // Compound Interest (Quarterly)
+      const tYears = tenorMonths / 12;
+      const rDecimal = rate / 100;
+      const n = 4; // Quarterly
+      const maturity = amount * Math.pow(1 + rDecimal / n, n * tYears);
+      const interest = maturity - amount;
 
       return {
         bankName: bank.bankName,

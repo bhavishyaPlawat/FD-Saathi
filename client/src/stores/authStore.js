@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import api from "../services/api";
 import i18n from "../i18n";
+import { useUserStore } from "./userStore";
 
 export const useAuthStore = create(
   persist(
@@ -17,6 +18,7 @@ export const useAuthStore = create(
           const { user, token } = data.data;
           localStorage.setItem("token", token);
           i18n.changeLanguage(user.language);
+          useUserStore.getState().setLanguage(user.language);
           set({ user, token, isLoading: false });
           return { success: true };
         } catch (err) {
@@ -35,6 +37,7 @@ export const useAuthStore = create(
           const { user, token } = data.data;
           localStorage.setItem("token", token);
           i18n.changeLanguage(user.language);
+          useUserStore.getState().setLanguage(user.language);
           set({ user, token, isLoading: false });
           return { success: true };
         } catch (err) {

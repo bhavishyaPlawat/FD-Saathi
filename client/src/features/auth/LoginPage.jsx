@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, Phone, Lock } from "lucide-react";
+import { Eye, EyeOff, Phone, Lock, Languages } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 
 export default function LoginPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { login, isLoading } = useAuthStore();
   const [form, setForm] = useState({ phone: "", password: "" });
@@ -16,7 +16,7 @@ export default function LoginPage() {
     e.preventDefault();
     const result = await login(form.phone, form.password);
     if (result.success) {
-      toast.success("स्वागत है! 🙏");
+      toast.success(t("auth.loginSuccess", "स्वागत है! 🙏"));
       navigate("/");
     } else {
       toast.error(result.message);
@@ -24,7 +24,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col md:flex-row">
+    <div className="min-h-screen bg-surface flex flex-col md:flex-row relative">
+      {/* ── Floating Language Toggle ── */}
+      <button 
+        onClick={() => i18n.changeLanguage(i18n.language === "en" ? "hi" : "en")}
+        className="absolute top-4 right-4 md:right-8 bg-white/50 backdrop-blur-md md:bg-white border border-gray-200 md:shadow-md px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold text-gray-700 z-10 hover:bg-white transition-colors"
+      >
+        <Languages size={16} className="text-primary-600" />
+        {i18n.language === "en" ? "हिंदी" : "English"}
+      </button>
+
       {/* ── Desktop left panel (hero) ──────────────────────────── */}
       <div className="hidden md:flex md:w-1/2 lg:w-2/5 bg-tertiary-500 flex-col items-center justify-center px-10 py-16 text-white">
         <div className="w-20 h-20 rounded-3xl bg-primary-500 flex items-center justify-center mb-6 shadow-xl">
@@ -46,14 +55,14 @@ export default function LoginPage() {
           Digital Saathi
         </h1>
         <p className="text-white/60 text-center text-sm max-w-xs leading-relaxed">
-          {t("app.tagline")} — FD की जानकारी, आपकी भाषा में
+          {t("app.tagline")} — {t("auth.loginSubtitle", "FD की जानकारी, अपनी भाषा में")}
         </p>
 
         <div className="mt-10 space-y-3 w-full max-w-xs">
           {[
-            { emoji: "📊", text: "सभी बैंकों की FD दरें एक जगह" },
-            { emoji: "🤖", text: "AI साथी से कभी भी पूछें" },
-            { emoji: "🇮🇳", text: "5 भाषाओं में उपलब्ध" },
+            { emoji: "📊", text: t("auth.features.compare", "सभी बैंकों की FD दरें एक जगह") },
+            { emoji: "🤖", text: t("auth.features.ai", "AI साथी से कभी भी पूछें") },
+            { emoji: "🇮🇳", text: t("auth.features.support", "5 भाषाओं में उपलब्ध") },
           ].map(({ emoji, text }) => (
             <div
               key={text}
@@ -160,12 +169,12 @@ export default function LoginPage() {
                   disabled={isLoading}
                   className="btn-primary w-full mt-2"
                 >
-                  {isLoading ? "लॉगिन हो रहा है..." : t("auth.login")}
+                  {isLoading ? t("auth.loggingIn", "लॉगिन हो रहा है...") : t("auth.login")}
                 </button>
               </form>
 
               <p className="text-center text-sm text-gray-500 mt-5">
-                नया अकाउंट?{" "}
+                {t("auth.newAccount", "नया अकाउंट?")}{" "}
                 <Link to="/register" className="text-primary-600 font-semibold">
                   {t("auth.register")}
                 </Link>

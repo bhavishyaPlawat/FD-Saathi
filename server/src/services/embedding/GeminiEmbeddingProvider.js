@@ -20,7 +20,6 @@ class GeminiEmbeddingProvider {
   }
 
   async embedBatch(texts) {
-    // Gemini doesn't have native batch embed — run in parallel with concurrency limit
     const CONCURRENCY = 5;
     const results = [];
 

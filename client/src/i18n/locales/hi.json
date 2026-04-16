@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Digital Saathi",
-    "tagline": "आपका वित्तीय साथी"
+    "tagline": "आपका वित्तीय साथी",
+    "subtitle": "आपका साथी"
   },
   "nav": {
     "home": "होम",
@@ -13,28 +14,169 @@
   "auth": {
     "login": "लॉगिन",
     "register": "रजिस्टर",
-    "logout": "लॉगआउट",
+    "logout": "लॉगआउट करें",
     "phone": "फ़ोन नंबर",
     "password": "पासवर्ड",
     "name": "नाम",
-    "language": "भाषा चुनें"
+    "language": "अपनी भाषा चुनें",
+    "registerSuccess": "अकाउंट बन गया! 🎉",
+    "digitalSaathiDesc": "अपना मुफ़्त अकाउंट बनाएं और FD की दुनिया को समझें",
+    "features": {
+      "support": "5 भाषाओं में सपोर्ट",
+      "secure": "आपका डेटा सुरक्षित है",
+      "bestRate": "बेस्ट FD रेट खोजें",
+      "compare": "सभी बैंकों की FD दरें एक जगह",
+      "ai": "AI साथी से कभी भी पूछें"
+    },
+    "welcomeSubtitle": "अपनी भाषा चुनें · We'll talk in your language",
+    "createAccount": "नया अकाउंट बनाएं",
+    "namePlaceholder": "आपका नाम",
+    "passwordPlaceholder": "कम से कम 6 अक्षर",
+    "creating": "बन रहा है...",
+    "proceed": "आगे बढ़ें →",
+    "alreadyHaveAccount": "पहले से अकाउंट है?",
+    "loginLink": "लॉगिन करें",
+    "loginSuccess": "स्वागत है! 🙏",
+    "loginSubtitle": "FD की जानकारी, आपकी भाषा में",
+    "loggingIn": "लॉगिन हो रहा है...",
+    "newAccount": "नया अकाउंट?"
+  },
+  "home": {
+    "greeting": "नमस्ते 👋",
+    "subtitle": "आज कौन सी FD समझनी है?",
+    "askPlaceholder": "FD के बारे में पूछें...",
+    "quickLabel": "फटाफट सवाल पूछें",
+    "quick": {
+      "q1": {
+        "title": "FD क्या है?",
+        "desc": "बेसिक जानकारी"
+      },
+      "q2": {
+        "title": "ब्याज कैसे मिलता है?",
+        "desc": "ब्याज की गणना"
+      },
+      "q3": {
+        "title": "कौन सा बैंक?",
+        "desc": "बैंक तुलना"
+      },
+      "q4": {
+        "title": "कैसे बुक करें?",
+        "desc": "FD खोलने की प्रक्रिया"
+      }
+    },
+    "adviceTitle": "साथी की सलाह",
+    "adviceDesc": "बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज कमाएं।",
+    "todayRates": "आज की दरें"
+  },
+  "profile": {
+    "langSuccess": "भाषा बदल दी गई",
+    "changeLang": "भाषा बदलें"
+  },
+  "general": {
+    "today": "आज",
+    "yesterday": "कल",
+    "daysAgo": "{{count}} दिन पहले"
+  },
+  "history": {
+    "title": "स्मृति (Memory)",
+    "subtitle": "आपकी पुरानी बातें",
+    "searchPlaceholder": "खोजें...",
+    "noChats": "अभी तक कोई बातचीत नहीं",
+    "startFirst": "पहली बातचीत शुरू करें",
+    "deleted": "बातचीत हटा दी गई"
   },
   "chat": {
     "placeholder": "FD के बारे में कुछ भी पूछें...",
     "send": "भेजें",
     "newChat": "नई बातचीत",
-    "thinking": "सोच रहा हूँ..."
+    "thinking": "सोच रहा हूँ...",
+    "alwaysAvailable": "हमेशा उपलब्ध",
+    "hello": "नमस्ते, {{name}}!",
+    "askAnything": "FD के बारे में कुछ भी पूछें",
+    "sug1": "FD क्या है?",
+    "sug2": "सबसे अच्छी FD कहाँ है?",
+    "sug3": "TDS क्या होता है?",
+    "sug4": "Senior citizen को क्या फायदा है?",
+    "sug5": "FD कैसे खुलती है?"
   },
   "compare": {
     "title": "FD दरें तुलना करें",
-    "amount": "राशि (₹)",
-    "tenor": "अवधि",
-    "senior": "वरिष्ठ नागरिक",
-    "compare": "तुलना करें",
-    "maturity": "परिपक्वता राशि",
-    "interest": "ब्याज"
+    "subtitle": "सभी बैंकों की दरें एक साथ देखें",
+    "filters": {
+      "all": "सभी",
+      "govt": "सरकारी बैंक",
+      "private": "प्राइवेट",
+      "sf": "स्मॉल फाइनेंस"
+    },
+    "highestInterest": "सबसे अधिक ब्याज",
+    "perYear": "प्रति वर्ष",
+    "minAmount": "न्यूनतम",
+    "months": "महीने",
+    "interestEarned": "ब्याज मिलेगा",
+    "maturityAmount": "परिपक्वता राशि",
+    "showLess": "कम दिखाएं",
+    "viewDetails": "विवरण देखें",
+    "investAmount": "निवेश राशि",
+    "dicgc": "DICGC बीमा ₹5 लाख तक",
+    "errorMinAmount": "न्यूनतम राशि ₹1,000 होनी चाहिए",
+    "errorCompare": "तुलना नहीं हो सकी, फिर कोशिश करें",
+    "amountLabel": "राशि (₹)",
+    "amountPlaceholder": "जैसे: 100000",
+    "tenorLabel": "अवधि चुनें",
+    "seniorToggle": "वरिष्ठ नागरिक",
+    "seniorDesc": "60+ वर्ष — अतिरिक्त ब्याज",
+    "comparingBtn": "तुलना हो रही है...",
+    "compareBtn": "तुलना करें",
+    "interestLbl": "ब्याज: ",
+    "earningsLbl": "कमाई: ",
+    "noBankFound": "इस फ़िल्टर के लिए कोई बैंक नहीं मिला",
+    "selectToCompare": "राशि और अवधि चुनकर तुलना करें"
   },
   "errors": {
-    "generic": "कुछ गलत हो गया, फिर से कोशिश करें"
+    "generic": "कुछ गलत हो गया"
+  },
+  "emergency": {
+    "title": "आपातकालीन फंड (Emergency)",
+    "subtitle": "FD तोड़ें या Overdraft लें? जानिए क्या है सही",
+    "inputsLabel": "FD और ज़रूरत की जानकारी दें",
+    "needAmount": "कितने पैसों की ज़रूरत है? (₹)",
+    "fdAmount": "FD की मूल राशि (₹)",
+    "fdRate": "FD ब्याज दर (%)",
+    "daysElapsed": "FD को कितने दिन हो गए?",
+    "daysRemaining": "FD में कितने दिन बचे हैं?",
+    "calculate": "कैलकुलेट करें",
+    "odLimit": "OD usually up to 90%. Break FD instead.",
+    "recOD": "सुझाव: FD Overdraft (Loan) लेना बेहतर है",
+    "recBreak": "सुझाव: FD तोड़ देना बेहतर है",
+    "costBreak": "FD तोड़ने का अंदाज़न नुकसान",
+    "breakInfo": "पेनल्टी + ब्याज़ का नुकसान",
+    "costOD": "FD पर लोन का अनुमानित खर्च",
+    "odInfo": "लोन पर दिया जाने वाला ब्याज़",
+    "descOD": "आपके मामले में लोन लेने से आपको कम नुकसान होगा क्योंकि आपकी FD का एक बड़ा हिस्सा अभी भी ब्याज़ कमा रहा है।",
+    "descBreak": "आपके मामले में लोन का ब्याज़ FD तोड़ने की पेनल्टी से ज़्यादा है। इसलिए FD तोड़ना सही रहेगा।"
+  },
+  "openFd": {
+    "title": "नयी FD खोलें",
+    "subtitle": "ऑनलाइन या ब्रांच जाकर FD खोलने की प्रक्रिया",
+    "onlineTab": "ऑनलाइन",
+    "branchTab": "ब्रांच विजिट",
+    "onlineSteps": "ऑनलाइन FD कैसे खोलें?",
+    "comingSoon": "जल्द आ रहा है",
+    "step1": "बैंक चुनें",
+    "step1Desc": "अपनी पसंद का बैंक चुनें जहां आपको सबसे अच्छी दरें मिल रही हों।",
+    "goCompare": "दरें देखें",
+    "step2": "KYC पूरा करें",
+    "step2Desc": "आधार और पैन कार्ड की जानकारी दें।",
+    "step3": "पेमेंट करें",
+    "step3Desc": "UPI या NetBanking से पेमेंट करके FD रसीद प्राप्त करें।",
+    "quickLinks": "बैंकों के डायरेक्ट लिंक",
+    "docChecklist": "ब्रांच जाने से पहले दस्तावेज़",
+    "docDesc": "बैंक ब्रांच में FD खोलने के लिए निम्नलिखित दस्तावेज़ अपने साथ रखें:",
+    "doc1": "आधार कार्ड (Aadhar Card) की ओरिजिनल और फोटोकॉपी",
+    "doc2": "पैन कार्ड (PAN Card)",
+    "doc3": "2 पासपोर्ट साइज़ फोटो",
+    "doc4": "पासबुक या कैंसिल चेक",
+    "doc5": "पते का प्रमाण (जैसे बिजली बिल, यदि आवश्यक हो)",
+    "branchTip": "ब्रांच जाने से पहले हमारी ऐप से यह देख लें कि कौन सा बैंक सबसे ज्यादा ब्याज दे रहा है, ताकि आपको सबसे अच्छा रिटर्न मिल सके।"
   }
 }

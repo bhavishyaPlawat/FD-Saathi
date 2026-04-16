@@ -5,6 +5,7 @@ import { useAuthStore } from "../../stores/authStore";
 import { useUserStore } from "../../stores/userStore";
 import api from "../../services/api";
 import i18n from "../../i18n";
+import { useTranslation } from "react-i18next";
 
 const LANGUAGES = [
   { value: "hi", label: "हिंदी", flag: "🇮🇳" },
@@ -15,6 +16,7 @@ const LANGUAGES = [
 ];
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, logout, updateUser } = useAuthStore();
   const { language, setLanguage } = useUserStore();
   const [saving, setSaving] = useState(false);
@@ -26,9 +28,9 @@ export default function ProfilePage() {
     try {
       await api.patch("/users/profile", { language: lang });
       updateUser({ language: lang });
-      toast.success("भाषा बदल दी गई");
+      toast.success(t("profile.langSuccess", "भाषा बदल दी गई"));
     } catch {
-      toast.error("कुछ गलत हो गया");
+      toast.error(t("errors.generic", "कुछ गलत हो गया"));
     } finally {
       setSaving(false);
     }
@@ -45,7 +47,7 @@ export default function ProfilePage() {
   return (
     <div className="px-4 py-5 space-y-5">
       <h2 className="font-headline text-lg font-bold text-gray-800">
-        प्रोफ़ाइल
+        {t("nav.profile", "प्रोफ़ाइल")}
       </h2>
 
       {/* User info card */}
@@ -69,7 +71,7 @@ export default function ProfilePage() {
       <div className="card space-y-3">
         <div className="flex items-center gap-2 mb-1">
           <Globe size={16} className="text-primary-500" />
-          <p className="font-semibold text-sm text-gray-700">भाषा बदलें</p>
+          <p className="font-semibold text-sm text-gray-700">{t("profile.changeLang", "भाषा बदलें")}</p>
         </div>
         <div className="space-y-2">
           {LANGUAGES.map((l) => (
@@ -114,7 +116,7 @@ export default function ProfilePage() {
                    font-medium text-sm hover:bg-red-50 transition-colors"
       >
         <LogOut size={16} />
-        लॉगआउट करें
+        {t("auth.logout", "लॉगआउट करें")}
       </button>
 
       <p className="text-center text-xs text-gray-400">

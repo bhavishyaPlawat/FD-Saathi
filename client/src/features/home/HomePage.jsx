@@ -6,6 +6,7 @@ import {
   BookOpen,
   Lightbulb,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../stores/authStore";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
@@ -36,35 +37,44 @@ function RateTicker({ rates }) {
 const QUICK_ACTIONS = [
   {
     icon: HelpCircle,
-    title: "FD क्या है?",
-    desc: "बेसिक जानकारी",
+    titleKey: "home.quick.q1.title",
+    defaultTitle: "FD क्या है?",
+    descKey: "home.quick.q1.desc",
+    defaultDesc: "बेसिक जानकारी",
     msg: "FD क्या होती है सरल भाषा में समझाओ",
     to: "/chat",
   },
   {
     icon: BarChart2,
-    title: "ब्याज कैसे मिलता है?",
-    desc: "ब्याज की गणना",
+    titleKey: "home.quick.q2.title",
+    defaultTitle: "ब्याज कैसे मिलता है?",
+    descKey: "home.quick.q2.desc",
+    defaultDesc: "ब्याज की गणना",
     msg: "FD पर ब्याज कैसे calculate होता है",
     to: "/chat",
   },
   {
     icon: MessageCircle,
-    title: "कौन सा बैंक?",
-    desc: "बैंक तुलना",
+    titleKey: "home.quick.q3.title",
+    defaultTitle: "कौन सा बैंक?",
+    descKey: "home.quick.q3.desc",
+    defaultDesc: "बैंक तुलना",
     msg: null,
     to: "/compare",
   },
   {
     icon: BookOpen,
-    title: "कैसे बुक करें?",
-    desc: "FD खोलने की प्रक्रिया",
+    titleKey: "home.quick.q4.title",
+    defaultTitle: "कैसे बुक करें?",
+    descKey: "home.quick.q4.desc",
+    defaultDesc: "FD खोलने की प्रक्रिया",
     msg: "FD कैसे खोलें step by step बताओ",
     to: "/chat",
   },
 ];
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const [featuredRates, setFeaturedRates] = useState([]);
@@ -85,11 +95,11 @@ export default function HomePage() {
     <div className="flex flex-col min-h-full">
       {/* ── Welcome hero ──────────────────────────────────────── */}
       <div className="bg-tertiary-500 px-4 md:px-8 pt-5 md:pt-8 pb-6 md:pb-8">
-        <p className="text-white/70 text-sm">नमस्ते 👋</p>
+        <p className="text-white/70 text-sm">{t("home.greeting", "नमस्ते 👋")}</p>
         <h1 className="font-headline text-xl md:text-2xl font-bold text-white mt-0.5">
           {user?.name}
         </h1>
-        <p className="text-white/60 text-xs mt-0.5">आज कौन सी FD समझनी है?</p>
+        <p className="text-white/60 text-xs mt-0.5">{t("home.subtitle", "आज कौन सी FD समझनी है?")}</p>
         <div className="mt-4 max-w-lg">
           <RateTicker rates={featuredRates} />
         </div>
@@ -105,7 +115,7 @@ export default function HomePage() {
             <MessageCircle size={16} className="text-primary-600" />
           </div>
           <span className="text-sm text-gray-400 flex-1">
-            FD के बारे में पूछें...
+            {t("home.askPlaceholder", "FD के बारे में पूछें...")}
           </span>
           <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -123,13 +133,13 @@ export default function HomePage() {
         {/* ── Quick action grid ──────────────────────────────────── */}
         <div>
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            फटाफट सवाल पूछें
+            {t("home.quickLabel", "फटाफट सवाल पूछें")}
           </p>
           {/* 2 cols on mobile, 4 cols on md+ */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {QUICK_ACTIONS.map(({ icon: Icon, title, desc, msg, to }) => (
+            {QUICK_ACTIONS.map(({ icon: Icon, titleKey, defaultTitle, descKey, defaultDesc, msg, to }) => (
               <button
-                key={title}
+                key={titleKey}
                 onClick={() => (msg ? goChat(msg) : navigate(to))}
                 className="card-hover text-left"
               >
@@ -137,9 +147,9 @@ export default function HomePage() {
                   <Icon size={20} className="text-primary-600" />
                 </div>
                 <p className="font-semibold text-sm text-gray-800 leading-tight">
-                  {title}
+                  {t(titleKey, defaultTitle)}
                 </p>
-                <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{t(descKey, defaultDesc)}</p>
               </button>
             ))}
           </div>
@@ -154,11 +164,10 @@ export default function HomePage() {
             </div>
             <div>
               <p className="text-xs font-bold text-secondary-700 mb-1 uppercase tracking-wide">
-                साथी की सलाह
+                {t("home.adviceTitle", "साथी की सलाह")}
               </p>
               <p className="text-sm text-secondary-800 leading-relaxed">
-                बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज
-                कमाएं।
+                {t("home.adviceDesc", "बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज कमाएं।")}
               </p>
             </div>
           </div>
@@ -166,7 +175,7 @@ export default function HomePage() {
           {/* Quick stats card */}
           <div className="card bg-primary-50 border-primary-100">
             <p className="text-xs font-bold text-primary-700 mb-3 uppercase tracking-wide">
-              आज की दरें
+              {t("home.todayRates", "आज की दरें")}
             </p>
             <div className="grid grid-cols-2 gap-3">
               {[

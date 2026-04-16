@@ -13,18 +13,37 @@ class GeminiAIProvider {
       parts: [{ text: m.content }],
     }));
 
-    const response = await this.ai.models.generateContentStream({
-      model: this.model,
-      contents,
-      config: {
-        temperature: 0.7,
-        systemInstruction: systemPrompt,
-      },
-    });
+    try {
+      const response = await this.ai.models.generateContentStream({
+        model: this.model,
+        contents,
+        config: {
+          temperature: 0.7,
+          systemInstruction: systemPrompt,
+        },
+      });
 
-    for await (const chunk of response) {
-      const text = chunk.text;
-      if (text) yield { text, done: false };
+      for await (const chunk of response) {
+        let text;
+        try {
+          text = chunk.text;
+        } catch (e) {
+          // Ignore getter exceptions (often safety blocked or empty part)
+          continue;
+        }
+        if (text) yield { text, done: false };
+      }
+    } catch (err) {
+      // 503 Exception parsing response or other stream specific errors
+      // Fallback to non-streaming API
+      try {
+        const fullResponse = await this.complete(messages, systemPrompt);
+        if (fullResponse) {
+          yield { text: fullResponse, done: false };
+        }
+      } catch (fallbackErr) {
+        throw fallbackErr; // If fallback also fails, throw
+      }
     }
 
     yield { text: "", done: true };

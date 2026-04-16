@@ -50,7 +50,7 @@ export default function AppLayout() {
               <span className="font-headline font-bold text-white text-base tracking-wide block">
                 Digital Saathi
               </span>
-              <span className="text-white/40 text-xs">आपका साथी</span>
+              <span className="text-white/40 text-xs">{t("app.subtitle", "आपका साथी")}</span>
             </div>
           </div>
         </div>

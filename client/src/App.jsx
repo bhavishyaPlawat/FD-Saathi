@@ -8,6 +8,8 @@ import ChatPage from "./features/chat/ChatPage";
 import ComparePage from "./features/compare/ComparePage";
 import HistoryPage from "./features/history/HistoryPage";
 import ProfilePage from "./features/home/ProfilePage";
+import EmergencyPage from "./features/emergency/EmergencyPage";
+import OpenFDPage from "./features/fd/OpenFDPage";
 
 export default function App() {
   return (
@@ -30,6 +32,8 @@ export default function App() {
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/emergency" element={<EmergencyPage />} />
+          <Route path="/open-fd" element={<OpenFDPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
