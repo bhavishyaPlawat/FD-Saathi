@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../stores/authStore";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import STTButton from "../../components/voice/STTButton";
 
 // Horizontal rate ticker
 function RateTicker({ rates }) {
@@ -91,64 +92,50 @@ export default function HomePage() {
     navigate("/chat");
   };
 
+  const handleVoiceSearch = (transcribedText) => {
+    goChat(transcribedText); // Immediately navigate to chat with transcribed text
+  };
+
   return (
     <div className="flex flex-col min-h-full">
-      {/* ── Welcome hero ──────────────────────────────────────── */}
       <div className="bg-tertiary-500 px-4 md:px-8 pt-5 md:pt-8 pb-6 md:pb-8">
         <p className="text-white/70 text-sm">{t("home.greeting", "नमस्ते 👋")}</p>
         <h1 className="font-headline text-xl md:text-2xl font-bold text-white mt-0.5">
           {user?.name}
         </h1>
         <p className="text-white/60 text-xs mt-0.5">{t("home.subtitle", "आज कौन सी FD समझनी है?")}</p>
-        <div className="mt-4 max-w-lg">
-          <RateTicker rates={featuredRates} />
-        </div>
+        <div className="mt-4 max-w-lg"><RateTicker rates={featuredRates} /></div>
       </div>
 
       <div className="px-4 md:px-8 py-5 md:py-6 space-y-5 md:space-y-6 max-w-5xl">
-        {/* ── Quick chat bar ─────────────────────────────────────── */}
-        <div
-          onClick={() => navigate("/chat")}
-          className="card flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow"
-        >
-          <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+        {/* Quick chat bar with Voice Mic */}
+        <div className="card flex items-center gap-3 hover:shadow-md transition-shadow relative">
+          <div onClick={() => navigate("/chat")} className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 cursor-pointer">
             <MessageCircle size={16} className="text-primary-600" />
           </div>
-          <span className="text-sm text-gray-400 flex-1">
+          <span onClick={() => navigate("/chat")} className="text-sm text-gray-400 flex-1 cursor-pointer">
             {t("home.askPlaceholder", "FD के बारे में पूछें...")}
           </span>
-          <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path
-                d="M2 7H12M8 3L12 7L8 11"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          
+          {/* VOICE STT BUTTON ADDED HERE */}
+          <STTButton onTextResult={handleVoiceSearch} className="mx-2" />
+
+          <div onClick={() => navigate("/chat")} className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
         </div>
 
-        {/* ── Quick action grid ──────────────────────────────────── */}
         <div>
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
             {t("home.quickLabel", "फटाफट सवाल पूछें")}
           </p>
-          {/* 2 cols on mobile, 4 cols on md+ */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {QUICK_ACTIONS.map(({ icon: Icon, titleKey, defaultTitle, descKey, defaultDesc, msg, to }) => (
-              <button
-                key={titleKey}
-                onClick={() => (msg ? goChat(msg) : navigate(to))}
-                className="card-hover text-left"
-              >
+              <button key={titleKey} onClick={() => (msg ? goChat(msg) : navigate(to))} className="card-hover text-left">
                 <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center mb-3">
                   <Icon size={20} className="text-primary-600" />
                 </div>
-                <p className="font-semibold text-sm text-gray-800 leading-tight">
-                  {t(titleKey, defaultTitle)}
-                </p>
+                <p className="font-semibold text-sm text-gray-800 leading-tight">{t(titleKey, defaultTitle)}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{t(descKey, defaultDesc)}</p>
               </button>
             ))}

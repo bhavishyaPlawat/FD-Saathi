@@ -178,5 +178,12 @@
     "doc4": "Passbook or Cancelled Cheque",
     "doc5": "Proof of Address (Electricity bill, if necessary)",
     "branchTip": "Before going to the branch, use our app to check which bank is giving the highest interest so you get the best return."
+  },
+  "voice": {
+    "speak": "Tap to speak",
+    "listen": "Listen aloud",
+    "micError": "Microphone access denied. Please check permissions.",
+    "processError": "Could not process your voice. Try again.",
+    "ttsError": "Could not generate speech."
   }
 }

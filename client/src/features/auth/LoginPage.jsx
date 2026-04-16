@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Phone, Lock, Languages } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
+import TTSButton from "../../components/voice/TTSButton";
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
@@ -73,6 +74,13 @@ export default function LoginPage() {
             </div>
           ))}
         </div>
+        <div className="mt-4">
+  <TTSButton 
+     textToRead={i18n.language === "en" ? "Welcome to Digital Saathi. FD Info in your language." : "डिजिटल साथी में आपका स्वागत है। FD की जानकारी, अपनी भाषा में।"} 
+     lang={i18n.language === "en" ? "en-IN" : "hi-IN"} 
+     className="bg-white/20 text-white hover:bg-white hover:text-primary-600" 
+  />
+</div>
       </div>
 
       {/* ── Right / Mobile: form ───────────────────────────────── */}
@@ -98,6 +106,13 @@ export default function LoginPage() {
             Digital Saathi
           </h1>
           <p className="text-white/70 text-sm">{t("app.tagline")}</p>
+          <div className="mt-4">
+  <TTSButton 
+     textToRead={i18n.language === "en" ? "Welcome to Digital Saathi. FD Info in your language." : "डिजिटल साथी में आपका स्वागत है। FD की जानकारी, अपनी भाषा में।"} 
+     lang={i18n.language === "en" ? "en-IN" : "hi-IN"} 
+     className="bg-white/20 text-white hover:bg-white hover:text-primary-600" 
+  />
+</div>
         </div>
 
         {/* Card */}

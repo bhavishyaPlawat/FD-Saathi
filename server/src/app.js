@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const { env } = require("./config/env");
 const { globalLimiter } = require("./middleware/rateLimit.middleware");
 const { errorMiddleware } = require("./middleware/error.middleware");
+const voiceRoutes = require("./modules/voice/voice.routes");
 
 // ─── Route imports ──────────────────────────────────────────────────────────
 // Each module registers its own router — add new modules here only
@@ -73,6 +74,7 @@ const createApp = () => {
   app.use("/api/users", userRoutes);
   app.use("/api/fd", fdRoutes);
   app.use("/api/chat", chatRoutes);
+  app.use("/api/voice", voiceRoutes);
 
   // ── 404 handler ───────────────────────────────────────────────────────────
   app.use((req, res) => {
