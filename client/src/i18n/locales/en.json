@@ -90,6 +90,7 @@
     "send": "Send",
     "newChat": "New",
     "thinking": "Thinking...",
+    "listening": "Listening...",
     "alwaysAvailable": "Always available",
     "hello": "Hello, {{name}}!",
     "askAnything": "Ask about FD",
@@ -133,7 +134,10 @@
     "selectToCompare": "Select amount and tenor to compare"
   },
   "errors": {
-    "generic": "There was an error"
+    "generic": "There was an error",
+    "rateLimited": "Too many questions. Please try again after 24 hours. 🙏",
+    "serviceDown": "Server is busy right now. Please try again in a few minutes.",
+    "network": "Connection error. Please check your internet."
   },
   "emergency": {
     "title": "Emergency Funds",

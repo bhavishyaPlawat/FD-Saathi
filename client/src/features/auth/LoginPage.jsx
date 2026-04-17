@@ -12,23 +12,48 @@ export default function LoginPage() {
   const { login, isLoading } = useAuthStore();
   const [form, setForm] = useState({ phone: "", password: "" });
   const [showPwd, setShowPwd] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({}); // Clear previous errors
+
     const result = await login(form.phone, form.password);
+
     if (result.success) {
       toast.success(t("auth.loginSuccess", "स्वागत है! 🙏"));
       navigate("/");
     } else {
-      toast.error(result.message);
+      // Show field-specific errors or general message
+      if (result.fieldErrors) {
+        setErrors(result.fieldErrors);
+
+        // Show first error as toast
+        const firstError = Object.values(result.fieldErrors)[0];
+        if (Array.isArray(firstError)) {
+          toast.error(firstError[0]);
+        } else {
+          toast.error(firstError);
+        }
+      } else {
+        toast.error(result.message);
+      }
     }
+  };
+
+  const getFieldError = (field) => {
+    if (!errors[field]) return null;
+    const error = errors[field];
+    return Array.isArray(error) ? error[0] : error;
   };
 
   return (
     <div className="min-h-screen bg-surface flex flex-col md:flex-row relative">
       {/* ── Floating Language Toggle ── */}
-      <button 
-        onClick={() => i18n.changeLanguage(i18n.language === "en" ? "hi" : "en")}
+      <button
+        onClick={() =>
+          i18n.changeLanguage(i18n.language === "en" ? "hi" : "en")
+        }
         className="absolute top-4 right-4 md:right-8 bg-white/50 backdrop-blur-md md:bg-white border border-gray-200 md:shadow-md px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold text-gray-700 z-10 hover:bg-white transition-colors"
       >
         <Languages size={16} className="text-primary-600" />
@@ -56,14 +81,24 @@ export default function LoginPage() {
           Digital Saathi
         </h1>
         <p className="text-white/60 text-center text-sm max-w-xs leading-relaxed">
-          {t("app.tagline")} — {t("auth.loginSubtitle", "FD की जानकारी, अपनी भाषा में")}
+          {t("app.tagline")} —{" "}
+          {t("auth.loginSubtitle", "FD की जानकारी, अपनी भाषा में")}
         </p>
 
         <div className="mt-10 space-y-3 w-full max-w-xs">
           {[
-            { emoji: "📊", text: t("auth.features.compare", "सभी बैंकों की FD दरें एक जगह") },
-            { emoji: "🤖", text: t("auth.features.ai", "AI साथी से कभी भी पूछें") },
-            { emoji: "🇮🇳", text: t("auth.features.support", "5 भाषाओं में उपलब्ध") },
+            {
+              emoji: "📊",
+              text: t("auth.features.compare", "सभी बैंकों की FD दरें एक जगह"),
+            },
+            {
+              emoji: "🤖",
+              text: t("auth.features.ai", "AI साथी से कभी भी पूछें"),
+            },
+            {
+              emoji: "🇮🇳",
+              text: t("auth.features.support", "5 भाषाओं में उपलब्ध"),
+            },
           ].map(({ emoji, text }) => (
             <div
               key={text}
@@ -75,12 +110,16 @@ export default function LoginPage() {
           ))}
         </div>
         <div className="mt-4">
-  <TTSButton 
-     textToRead={i18n.language === "en" ? "Welcome to Digital Saathi. FD Info in your language." : "डिजिटल साथी में आपका स्वागत है। FD की जानकारी, अपनी भाषा में।"} 
-     lang={i18n.language === "en" ? "en-IN" : "hi-IN"} 
-     className="bg-white/20 text-white hover:bg-white hover:text-primary-600" 
-  />
-</div>
+          <TTSButton
+            textToRead={
+              i18n.language === "en"
+                ? "Welcome to Digital Saathi. FD Info in your language."
+                : "डिजिटल साथी में आपका स्वागत है। FD की जानकारी, अपनी भाषा में।"
+            }
+            lang={i18n.language === "en" ? "en-IN" : "hi-IN"}
+            className="bg-white/20 text-white hover:bg-white hover:text-primary-600"
+          />
+        </div>
       </div>
 
       {/* ── Right / Mobile: form ───────────────────────────────── */}
@@ -107,12 +146,16 @@ export default function LoginPage() {
           </h1>
           <p className="text-white/70 text-sm">{t("app.tagline")}</p>
           <div className="mt-4">
-  <TTSButton 
-     textToRead={i18n.language === "en" ? "Welcome to Digital Saathi. FD Info in your language." : "डिजिटल साथी में आपका स्वागत है। FD की जानकारी, अपनी भाषा में।"} 
-     lang={i18n.language === "en" ? "en-IN" : "hi-IN"} 
-     className="bg-white/20 text-white hover:bg-white hover:text-primary-600" 
-  />
-</div>
+            <TTSButton
+              textToRead={
+                i18n.language === "en"
+                  ? "Welcome to Digital Saathi. FD Info in your language."
+                  : "डिजिटल साथी में आपका स्वागत है। FD की जानकारी, अपनी भाषा में।"
+              }
+              lang={i18n.language === "en" ? "en-IN" : "hi-IN"}
+              className="bg-white/20 text-white hover:bg-white hover:text-primary-600"
+            />
+          </div>
         </div>
 
         {/* Card */}
@@ -136,17 +179,23 @@ export default function LoginPage() {
                     />
                     <input
                       type="tel"
-                      className="input-base pl-9"
+                      className={`input-base pl-9 ${getFieldError("phone") ? "border-red-400 focus:ring-red-400" : ""}`}
                       placeholder="9876543210"
                       value={form.phone}
-                      onChange={(e) =>
-                        setForm({ ...form, phone: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setForm({ ...form, phone: e.target.value });
+                        setErrors({ ...errors, phone: null });
+                      }}
                       required
                       inputMode="numeric"
                       maxLength={10}
                     />
                   </div>
+                  {getFieldError("phone") && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">
+                      {getFieldError("phone")}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password */}
@@ -161,12 +210,13 @@ export default function LoginPage() {
                     />
                     <input
                       type={showPwd ? "text" : "password"}
-                      className="input-base pl-9 pr-10"
+                      className={`input-base pl-9 pr-10 ${getFieldError("password") ? "border-red-400 focus:ring-red-400" : ""}`}
                       placeholder="••••••"
                       value={form.password}
-                      onChange={(e) =>
-                        setForm({ ...form, password: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setForm({ ...form, password: e.target.value });
+                        setErrors({ ...errors, password: null });
+                      }}
                       required
                     />
                     <button
@@ -177,6 +227,11 @@ export default function LoginPage() {
                       {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
+                  {getFieldError("password") && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">
+                      {getFieldError("password")}
+                    </p>
+                  )}
                 </div>
 
                 <button
@@ -184,7 +239,9 @@ export default function LoginPage() {
                   disabled={isLoading}
                   className="btn-primary w-full mt-2"
                 >
-                  {isLoading ? t("auth.loggingIn", "लॉगिन हो रहा है...") : t("auth.login")}
+                  {isLoading
+                    ? t("auth.loggingIn", "लॉगिन हो रहा है...")
+                    : t("auth.login")}
                 </button>
               </form>
 

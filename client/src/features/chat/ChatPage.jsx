@@ -6,9 +6,11 @@ import { useChatStore } from "../../stores/chatStore";
 import { useAuthStore } from "../../stores/authStore";
 import i18n from "../../i18n";
 import ReactMarkdown from "react-markdown";
+import TTSButton from "../../components/voice/TTSButton";
+import GlossaryPopup from "../../components/GlossaryPopup";
 
 // ── Glossary card ─────────────────────────────────────────────
-function GlossaryCard({ terms }) {
+function GlossaryCard({ terms, onTermClick }) {
   if (!terms?.length) return null;
   return (
     <div className="mx-4 mb-3 bg-primary-50 border border-primary-100 rounded-2xl p-3">
@@ -22,12 +24,13 @@ function GlossaryCard({ terms }) {
       </div>
       <div className="flex flex-wrap gap-1 mt-1">
         {terms.map((t) => (
-          <span
+          <button
             key={t}
-            className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium"
+            onClick={() => onTermClick(t)}
+            className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium hover:bg-primary-200 transition-colors cursor-pointer"
           >
             {t}
-          </span>
+          </button>
         ))}
       </div>
     </div>
@@ -35,7 +38,8 @@ function GlossaryCard({ terms }) {
 }
 
 // ── Single message bubble ──────────────────────────────────────
-function Message({ msg, isStreaming }) {
+function Message({ msg, isStreaming, onTermClick }) {
+  const { i18n } = useTranslation();
   const isUser = msg.role === "user";
   const clean = (msg.content || "").replace(/GLOSSARY_TERMS:.*/gi, "").trim();
 
@@ -52,43 +56,76 @@ function Message({ msg, isStreaming }) {
         </div>
       )}
       <div
-        className={`max-w-[75%] md:max-w-[65%] px-4 py-3 rounded-2xl text-sm leading-relaxed
-        ${
-          isUser
-            ? "bg-tertiary-500 text-white rounded-tr-sm"
-            : `bg-white border border-gray-100 text-gray-800 rounded-tl-sm shadow-sm
-             ${isStreaming ? "streaming-cursor" : ""}`
-        }`}
+        className={`flex flex-col ${isUser ? "items-end" : "items-start"} max-w-[75%] md:max-w-[65%]`}
       >
-        {isUser ? (
-          clean
-        ) : (
-          <ReactMarkdown
-            components={{
-              p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-              strong: ({ children }) => (
-                <strong className="font-semibold text-gray-900">
-                  {children}
-                </strong>
-              ),
-              ul: ({ children }) => (
-                <ul className="list-disc list-inside space-y-1 my-2">
-                  {children}
-                </ul>
-              ),
-              ol: ({ children }) => (
-                <ol className="list-decimal list-inside space-y-1 my-2">
-                  {children}
-                </ol>
-              ),
-              li: ({ children }) => (
-                <li className="leading-relaxed">{children}</li>
-              ),
-            }}
-          >
-            {clean || (isStreaming ? "" : "...")}
-          </ReactMarkdown>
+        <div
+          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed
+          ${
+            isUser
+              ? "bg-tertiary-500 text-white rounded-tr-sm"
+              : `bg-white border border-gray-100 text-gray-800 rounded-tl-sm shadow-sm
+               ${isStreaming ? "streaming-cursor" : ""}`
+          }`}
+        >
+          {isUser ? (
+            clean
+          ) : (
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => (
+                  <p className="mb-2 last:mb-0">{children}</p>
+                ),
+                strong: ({ children }) => (
+                  <strong className="font-semibold text-gray-900">
+                    {children}
+                  </strong>
+                ),
+                ul: ({ children }) => (
+                  <ul className="list-disc list-inside space-y-1 my-2">
+                    {children}
+                  </ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="list-decimal list-inside space-y-1 my-2">
+                    {children}
+                  </ol>
+                ),
+                li: ({ children }) => (
+                  <li className="leading-relaxed">{children}</li>
+                ),
+              }}
+            >
+              {clean || (isStreaming ? "" : "...")}
+            </ReactMarkdown>
+          )}
+        </div>
+        {/* TTS Button for assistant messages */}
+        {!isUser && clean && !isStreaming && (
+          <div className="mt-1 ml-1">
+            <TTSButton
+              textToRead={clean}
+              lang={i18n.language === "en" ? "en-IN" : "hi-IN"}
+              className=""
+            />
+          </div>
         )}
+        {/* Show glossary terms inline below message if available */}
+        {!isUser &&
+          msg.glossaryTerms &&
+          msg.glossaryTerms.length > 0 &&
+          !isStreaming && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {msg.glossaryTerms.map((term) => (
+                <button
+                  key={term}
+                  onClick={() => onTermClick(term)}
+                  className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full font-medium hover:bg-primary-200 transition-colors"
+                >
+                  📖 {term}
+                </button>
+              ))}
+            </div>
+          )}
       </div>
     </div>
   );
@@ -111,6 +148,7 @@ export default function ChatPage() {
 
   const [input, setInput] = useState("");
   const [lastGlossary, setLastGlossary] = useState([]);
+  const [selectedTerm, setSelectedTerm] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const recognitionRef = useRef(null);
@@ -118,7 +156,8 @@ export default function ChatPage() {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    const SpeechReg = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechReg =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechReg) {
       recognitionRef.current = new SpeechReg();
       recognitionRef.current.continuous = false;
@@ -140,7 +179,7 @@ export default function ChatPage() {
         recognitionRef.current.stop();
       }
     };
-  }, []);
+  }, [i18n.language]); // Re-initialize when language changes
 
   const toggleMic = () => {
     if (!recognitionRef.current) {
@@ -168,18 +207,32 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Extract glossary terms from the last assistant message during streaming
   useEffect(() => {
     const last = messages[messages.length - 1];
-    if (last?.role === "assistant" && last.glossaryTerms?.length) {
-      setLastGlossary(last.glossaryTerms);
+
+    if (last?.role === "assistant") {
+      // Extract glossary terms from content (even during streaming)
+      const glossaryMatch = last.content.match(/GLOSSARY_TERMS:\s*(.+)/);
+      if (glossaryMatch) {
+        const terms = glossaryMatch[1].split(",").map((t) => t.trim());
+        setLastGlossary(terms);
+      } else if (last.glossaryTerms?.length) {
+        // Use saved glossary terms from DB
+        setLastGlossary(last.glossaryTerms);
+      }
     }
+
+    // Read aloud if voice mode was activated
     if (!isStreaming && voiceModeActive && messages.length > 0) {
       if (last?.role === "assistant" && last?.content) {
-        const textToRead = last.content.replace(/[*#]/g, "").replace(/GLOSSARY_TERMS:.*/gi, "");
+        const textToRead = last.content
+          .replace(/[*#]/g, "")
+          .replace(/GLOSSARY_TERMS:.*/gi, "");
         const utterance = new SpeechSynthesisUtterance(textToRead);
         utterance.lang = i18n.language === "hi" ? "hi-IN" : "en-IN";
         window.speechSynthesis.speak(utterance);
-        setVoiceModeActive(false); 
+        setVoiceModeActive(false);
       }
     }
   }, [messages, isStreaming, voiceModeActive]);
@@ -193,8 +246,22 @@ export default function ChatPage() {
     inputRef.current?.focus();
     try {
       await sendMessage(msg, user?.language || "hi");
-    } catch {
-      toast.error(t("errors.generic"));
+    } catch (err) {
+      // Check for specific error types
+      if (err.response?.status === 429) {
+        toast.error(
+          t(
+            "errors.rateLimited",
+            "बहुत सारे सवाल हो गए। 24 घंटे बाद फिर से कोशिश करें।",
+          ),
+        );
+      } else if (err.response?.status === 503) {
+        toast.error(
+          t("errors.serviceDown", "सर्वर busy है। कुछ देर बाद कोशिश करें।"),
+        );
+      } else {
+        toast.error(t("errors.generic"));
+      }
     }
   };
 
@@ -203,6 +270,10 @@ export default function ChatPage() {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleTermClick = (term) => {
+    setSelectedTerm(term);
   };
 
   return (
@@ -265,7 +336,11 @@ export default function ChatPage() {
             </div>
             <div className="flex flex-wrap gap-2 justify-center max-w-md">
               {SUGGESTIONS.map((q) => (
-                <button key={q.key} onClick={() => setInput(t(q.key, q.text))} className="chip">
+                <button
+                  key={q.key}
+                  onClick={() => setInput(t(q.key, q.text))}
+                  className="chip"
+                >
                   {t(q.key, q.text)}
                 </button>
               ))}
@@ -282,10 +357,19 @@ export default function ChatPage() {
               i === messages.length - 1 &&
               msg.role === "assistant"
             }
+            onTermClick={handleTermClick}
           />
         ))}
 
-        {!isStreaming && <GlossaryCard terms={lastGlossary} />}
+        {/* Show glossary during streaming if we've detected terms */}
+        {isStreaming && lastGlossary.length > 0 && (
+          <GlossaryCard terms={lastGlossary} onTermClick={handleTermClick} />
+        )}
+
+        {/* Show glossary after completion */}
+        {!isStreaming && lastGlossary.length > 0 && (
+          <GlossaryCard terms={lastGlossary} onTermClick={handleTermClick} />
+        )}
 
         {isStreaming && messages[messages.length - 1]?.content === "" && (
           <div className="flex items-center gap-2 px-6 text-gray-400 text-sm">
@@ -325,7 +409,9 @@ export default function ChatPage() {
         {isRecording && (
           <div className="absolute -top-12 left-0 right-0 flex justify-center items-end pointer-events-none pb-2">
             <div className="flex items-center gap-1.5 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-primary-100">
-              <span className="text-xs font-bold text-primary-500 mr-2">{t("chat.listening", "सुन रहा हूँ...")}</span>
+              <span className="text-xs font-bold text-primary-500 mr-2">
+                {t("chat.listening", "सुन रहा हूँ...")}
+              </span>
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
@@ -333,7 +419,7 @@ export default function ChatPage() {
                   style={{
                     height: `${Math.max(8, Math.random() * 24)}px`,
                     animationDuration: `${0.5 + Math.random() * 0.5}s`,
-                    animationDelay: `${Math.random() * 0.5}s`
+                    animationDelay: `${Math.random() * 0.5}s`,
                   }}
                 />
               ))}
@@ -349,7 +435,9 @@ export default function ChatPage() {
           <button
             onClick={toggleMic}
             className={`p-1.5 rounded-xl flex-shrink-0 self-center transition-colors ${
-              isRecording ? "text-red-500 bg-red-50 animate-pulse" : "text-primary-500 hover:bg-primary-50"
+              isRecording
+                ? "text-red-500 bg-red-50 animate-pulse"
+                : "text-primary-500 hover:bg-primary-50"
             }`}
           >
             <Mic size={18} />
@@ -374,6 +462,14 @@ export default function ChatPage() {
           </button>
         </div>
       </div>
+
+      {/* Glossary Popup */}
+      {selectedTerm && (
+        <GlossaryPopup
+          term={selectedTerm}
+          onClose={() => setSelectedTerm(null)}
+        />
+      )}
     </div>
   );
 }

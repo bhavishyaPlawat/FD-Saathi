@@ -23,25 +23,53 @@ export default function RegisterPage() {
     password: "",
     language: "hi",
   });
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({}); // Clear previous errors
+
     const result = await register(form);
+
     if (result.success) {
       toast.success(t("auth.registerSuccess", "Account created! 🎉"));
       navigate("/");
     } else {
-      toast.error(result.message);
+      // Show field-specific errors or general message
+      if (result.fieldErrors) {
+        setErrors(result.fieldErrors);
+
+        // Show first error as toast
+        const firstError = Object.values(result.fieldErrors)[0];
+        if (Array.isArray(firstError)) {
+          toast.error(firstError[0]);
+        } else {
+          toast.error(firstError);
+        }
+      } else {
+        toast.error(result.message);
+      }
     }
   };
 
-  const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+  const set = (key, val) => {
+    setForm((f) => ({ ...f, [key]: val }));
+    setErrors({ ...errors, [key]: null }); // Clear error when user types
+  };
+
+  const getFieldError = (field) => {
+    if (!errors[field]) return null;
+    const error = errors[field];
+    return Array.isArray(error) ? error[0] : error;
+  };
 
   return (
     <div className="min-h-screen bg-surface flex flex-col md:flex-row relative">
       {/* ── Floating Language Toggle ── */}
-      <button 
-        onClick={() => i18n.changeLanguage(i18n.language === "en" ? "hi" : "en")}
+      <button
+        onClick={() =>
+          i18n.changeLanguage(i18n.language === "en" ? "hi" : "en")
+        }
         className="absolute top-4 right-4 md:right-8 bg-white/50 backdrop-blur-md md:bg-white border border-gray-200 md:shadow-md px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold text-gray-700 z-10 hover:bg-white transition-colors"
       >
         <Languages size={16} className="text-primary-600" />
@@ -69,14 +97,26 @@ export default function RegisterPage() {
           Digital Saathi
         </h1>
         <p className="text-white/60 text-center text-sm max-w-xs">
-          {t("auth.digitalSaathiDesc", "अपना मुफ़्त अकाउंट बनाएं और FD की दुनिया को समझें")}
+          {t(
+            "auth.digitalSaathiDesc",
+            "अपना मुफ़्त अकाउंट बनाएं और FD की दुनिया को समझें",
+          )}
         </p>
 
         <div className="mt-10 space-y-3 w-full max-w-xs">
           {[
-            { emoji: "🌐", text: t("auth.features.support", "5 भाषाओं में सपोर्ट") },
-            { emoji: "🔒", text: t("auth.features.secure", "आपका डेटा सुरक्षित है") },
-            { emoji: "💰", text: t("auth.features.bestRate", "बेस्ट FD रेट खोजें") },
+            {
+              emoji: "🌐",
+              text: t("auth.features.support", "5 भाषाओं में सपोर्ट"),
+            },
+            {
+              emoji: "🔒",
+              text: t("auth.features.secure", "आपका डेटा सुरक्षित है"),
+            },
+            {
+              emoji: "💰",
+              text: t("auth.features.bestRate", "बेस्ट FD रेट खोजें"),
+            },
           ].map(({ emoji, text }) => (
             <div
               key={text}
@@ -110,7 +150,10 @@ export default function RegisterPage() {
           </div>
           <h1 className="font-headline text-2xl font-bold">Digital Saathi</h1>
           <p className="text-white/70 text-sm mt-1">
-            {t("auth.welcomeSubtitle", "अपनी भाषा चुनें · We'll talk in your language")}
+            {t(
+              "auth.welcomeSubtitle",
+              "अपनी भाषा चुनें · We'll talk in your language",
+            )}
           </p>
         </div>
 
@@ -129,12 +172,17 @@ export default function RegisterPage() {
                   </label>
                   <input
                     type="text"
-                    className="input-base"
+                    className={`input-base ${getFieldError("name") ? "border-red-400 focus:ring-red-400" : ""}`}
                     placeholder={t("auth.namePlaceholder", "आपका नाम")}
                     value={form.name}
                     onChange={(e) => set("name", e.target.value)}
                     required
                   />
+                  {getFieldError("name") && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">
+                      {getFieldError("name")}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -143,7 +191,7 @@ export default function RegisterPage() {
                   </label>
                   <input
                     type="tel"
-                    className="input-base"
+                    className={`input-base ${getFieldError("phone") ? "border-red-400 focus:ring-red-400" : ""}`}
                     placeholder="9876543210"
                     value={form.phone}
                     onChange={(e) => set("phone", e.target.value)}
@@ -151,6 +199,11 @@ export default function RegisterPage() {
                     inputMode="numeric"
                     maxLength={10}
                   />
+                  {getFieldError("phone") && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">
+                      {getFieldError("phone")}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -159,12 +212,20 @@ export default function RegisterPage() {
                   </label>
                   <input
                     type="password"
-                    className="input-base"
-                    placeholder={t("auth.passwordPlaceholder", "कम से कम 6 अक्षर")}
+                    className={`input-base ${getFieldError("password") ? "border-red-400 focus:ring-red-400" : ""}`}
+                    placeholder={t(
+                      "auth.passwordPlaceholder",
+                      "कम से कम 6 अक्षर",
+                    )}
                     value={form.password}
                     onChange={(e) => set("password", e.target.value)}
                     required
                   />
+                  {getFieldError("password") && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">
+                      {getFieldError("password")}
+                    </p>
+                  )}
                 </div>
 
                 {/* Language picker */}
@@ -220,7 +281,9 @@ export default function RegisterPage() {
                   disabled={isLoading}
                   className="btn-primary w-full mt-2"
                 >
-                  {isLoading ? t("auth.creating", "बन रहा है...") : t("auth.proceed", "आगे बढ़ें →")}
+                  {isLoading
+                    ? t("auth.creating", "बन रहा है...")
+                    : t("auth.proceed", "आगे बढ़ें →")}
                 </button>
               </form>
 

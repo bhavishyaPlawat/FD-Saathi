@@ -26,6 +26,7 @@ export const useAuthStore = create(
           return {
             success: false,
             message: err.response?.data?.message || "Login failed",
+            fieldErrors: err.response?.data?.errors || null,
           };
         }
       },
@@ -45,6 +46,7 @@ export const useAuthStore = create(
           return {
             success: false,
             message: err.response?.data?.message || "Registration failed",
+            fieldErrors: err.response?.data?.errors || null,
           };
         }
       },
