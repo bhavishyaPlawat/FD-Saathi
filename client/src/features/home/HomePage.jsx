@@ -19,7 +19,7 @@ function RateTicker({ rates }) {
   if (!rates.length) return null;
   const doubled = [...rates, ...rates];
   return (
-    <div className="overflow-hidden min-w-max bg-white/10 ra rounded-xl py-2 px-3">
+    <div className="overflow-hidden  bg-white/10 ra rounded-xl py-2 px-3">
       <div className="ticker-inner">
         {doubled.map((r, i) => (
           <span
