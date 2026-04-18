@@ -1,10 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   MessageCircle,
   BarChart2,
   HelpCircle,
   BookOpen,
   Lightbulb,
+  AlertCircle,
+  FileCheck,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../stores/authStore";
@@ -117,7 +119,7 @@ export default function HomePage() {
             {t("home.askPlaceholder", "FD के बारे में पूछें...")}
           </span>
           
-          {/* VOICE STT BUTTON ADDED HERE */}
+          {/* VOICE STT BUTTON */}
           <STTButton onTextResult={handleVoiceSearch} className="mx-2" />
 
           <div onClick={() => navigate("/chat")} className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center cursor-pointer">
@@ -139,6 +141,56 @@ export default function HomePage() {
                 <p className="text-xs text-gray-400 mt-0.5">{t(descKey, defaultDesc)}</p>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* ── NEW: Tools Section (Emergency & Open-FD) ────────── */}
+        <div>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+            {t("home.toolsLabel", "उपयोगी टूल")}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Emergency Fund Calculator */}
+            <Link 
+              to="/emergency" 
+              className="card-hover text-left bg-gradient-to-br from-red-50 to-orange-50 border-red-100 hover:shadow-md transition-all"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center">
+                  <AlertCircle className="text-red-600" size={24} />
+                </div>
+                <span className="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
+                  {t("home.calculator", "Calculator")}
+                </span>
+              </div>
+              <p className="font-bold text-gray-800 mb-1">
+                {t("home.emergency", "Emergency Fund")}
+              </p>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                {t("home.emergencyDesc", "FD तोड़ें या Overdraft लें? सबसे सही विकल्प जानें")}
+              </p>
+            </Link>
+
+            {/* Open New FD Guide */}
+            <Link 
+              to="/open-fd" 
+              className="card-hover text-left bg-gradient-to-br from-green-50 to-emerald-50 border-green-100 hover:shadow-md transition-all"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                  <FileCheck className="text-green-600" size={24} />
+                </div>
+                <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
+                  {t("home.guide", "Guide")}
+                </span>
+              </div>
+              <p className="font-bold text-gray-800 mb-1">
+                {t("home.openFd", "Open New FD")}
+              </p>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                {t("home.openFdDesc", "ऑनलाइन या ब्रांच में FD कैसे खोलें - पूरी जानकारी")}
+              </p>
+            </Link>
           </div>
         </div>
 

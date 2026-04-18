@@ -6,7 +6,9 @@ import {
   ChevronDown,
   ChevronUp,
   Star,
+  ArrowRight,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
 import { useTranslation } from "react-i18next";
@@ -364,16 +366,42 @@ export default function ComparePage() {
                 {t("compare.noBankFound", "इस फ़िल्टर के लिए कोई बैंक नहीं मिला")}
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {filteredResults.map((bank, i) => (
-                  <BankCard
-                    key={bank.bankName + i}
-                    bank={bank}
-                    rank={i + 1}
-                    inputAmount={Number(amount)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  {filteredResults.map((bank, i) => (
+                    <BankCard
+                      key={bank.bankName + i}
+                      bank={bank}
+                      rank={i + 1}
+                      inputAmount={Number(amount)}
+                    />
+                  ))}
+                </div>
+
+                {/* ── NEW: CTA to Open FD ────────────────────────── */}
+                <div className="mt-8 card bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <ArrowRight size={24} className="text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-800 mb-1">
+                        {t("compare.readyToOpen", "FD खोलने के लिए तैयार हैं?")}
+                      </p>
+                      <p className="text-sm text-gray-600 mb-3">
+                        {t("compare.readyDesc", "ऑनलाइन या ब्रांच में FD कैसे खोलें - पूरी जानकारी देखें")}
+                      </p>
+                      <Link 
+                        to="/open-fd" 
+                        className="btn-primary text-sm inline-flex items-center gap-2"
+                      >
+                        {t("compare.viewGuide", "गाइड देखें")} 
+                        <ArrowRight size={16} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </>
             )
           ) : (
             <div className="card text-center py-12">

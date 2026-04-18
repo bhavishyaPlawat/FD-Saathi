@@ -42,6 +42,7 @@
     "newAccount": "New account?"
   },
   "home": {
+    "toolsLabel":"Features",
     "greeting": "Hello 👋",
     "subtitle": "Which FD do you want to understand today?",
     "askPlaceholder": "Ask about FDs...",
@@ -140,6 +141,7 @@
     "network": "Connection error. Please check your internet."
   },
   "emergency": {
+    "subtitle":"Break the FD or Take Over Draft which is beneficial",
     "title": "Emergency Funds",
     "subtitle": "Break FD or take an Overdraft? Find the best option",
     "inputsLabel": "Enter FD Details",

@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AlertCircle, ArrowRight, ShieldCheck, Info } from "lucide-react";
+import { AlertCircle, ArrowRight, ShieldCheck, Info, ChevronLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
 function formatINR(n) {
@@ -13,6 +14,8 @@ function formatINR(n) {
 
 export default function EmergencyPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  
   const [fdAmount, setFdAmount] = useState("500000");
   const [fdRate, setFdRate] = useState("7.0");
   const [daysElapsed, setDaysElapsed] = useState("180");
@@ -69,6 +72,15 @@ export default function EmergencyPage() {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-3xl mx-auto">
+      {/* ── Back Button ────────────────────────────────────────── */}
+      <button 
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 mb-4 transition-colors font-medium"
+      >
+        <ChevronLeft size={18} /> 
+        {t("general.back", "वापस जाएं")}
+      </button>
+
       <div className="mb-6 flex items-center gap-3 text-red-500">
         <AlertCircle size={28} />
         <div>
@@ -147,7 +159,7 @@ export default function EmergencyPage() {
 
         <button
           onClick={handleCalculate}
-          className="btn-primary w-full mt-2"
+          className="btn-primary w-full mt-2 flex items-center justify-center gap-2"
         >
           {t("emergency.calculate", "कैलकुलेट करें")} <ArrowRight size={16} />
         </button>
