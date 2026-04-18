@@ -19,7 +19,7 @@ function RateTicker({ rates }) {
   if (!rates.length) return null;
   const doubled = [...rates, ...rates];
   return (
-    <div className="overflow-hidden bg-white/10 rounded-xl py-2 px-3">
+    <div className="overflow-hidden min-w-max bg-white/10 ra rounded-xl py-2 px-3">
       <div className="ticker-inner">
         {doubled.map((r, i) => (
           <span
@@ -101,29 +101,52 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-full">
       <div className="bg-tertiary-500 px-4 md:px-8 pt-5 md:pt-8 pb-6 md:pb-8">
-        <p className="text-white/70 text-sm">{t("home.greeting", "नमस्ते 👋")}</p>
+        <p className="text-white/70 text-sm">
+          {t("home.greeting", "नमस्ते 👋")}
+        </p>
         <h1 className="font-headline text-xl md:text-2xl font-bold text-white mt-0.5">
           {user?.name}
         </h1>
-        <p className="text-white/60 text-xs mt-0.5">{t("home.subtitle", "आज कौन सी FD समझनी है?")}</p>
-        <div className="mt-4 max-w-lg"><RateTicker rates={featuredRates} /></div>
+        <p className="text-white/60 text-xs mt-0.5">
+          {t("home.subtitle", "आज कौन सी FD समझनी है?")}
+        </p>
+        <div className="mt-4 max-w-lg">
+          <RateTicker rates={featuredRates} />
+        </div>
       </div>
 
       <div className="px-4 md:px-8 py-5 md:py-6 space-y-5 md:space-y-6 max-w-5xl">
         {/* Quick chat bar with Voice Mic */}
         <div className="card flex items-center gap-3 hover:shadow-md transition-shadow relative">
-          <div onClick={() => navigate("/chat")} className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 cursor-pointer">
+          <div
+            onClick={() => navigate("/chat")}
+            className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 cursor-pointer"
+          >
             <MessageCircle size={16} className="text-primary-600" />
           </div>
-          <span onClick={() => navigate("/chat")} className="text-sm text-gray-400 flex-1 cursor-pointer">
+          <span
+            onClick={() => navigate("/chat")}
+            className="text-sm text-gray-400 flex-1 cursor-pointer"
+          >
             {t("home.askPlaceholder", "FD के बारे में पूछें...")}
           </span>
-          
+
           {/* VOICE STT BUTTON */}
           <STTButton onTextResult={handleVoiceSearch} className="mx-2" />
 
-          <div onClick={() => navigate("/chat")} className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center cursor-pointer">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <div
+            onClick={() => navigate("/chat")}
+            className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center cursor-pointer"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M2 7H12M8 3L12 7L8 11"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </div>
         </div>
 
@@ -132,15 +155,33 @@ export default function HomePage() {
             {t("home.quickLabel", "फटाफट सवाल पूछें")}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {QUICK_ACTIONS.map(({ icon: Icon, titleKey, defaultTitle, descKey, defaultDesc, msg, to }) => (
-              <button key={titleKey} onClick={() => (msg ? goChat(msg) : navigate(to))} className="card-hover text-left">
-                <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center mb-3">
-                  <Icon size={20} className="text-primary-600" />
-                </div>
-                <p className="font-semibold text-sm text-gray-800 leading-tight">{t(titleKey, defaultTitle)}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{t(descKey, defaultDesc)}</p>
-              </button>
-            ))}
+            {QUICK_ACTIONS.map(
+              ({
+                icon: Icon,
+                titleKey,
+                defaultTitle,
+                descKey,
+                defaultDesc,
+                msg,
+                to,
+              }) => (
+                <button
+                  key={titleKey}
+                  onClick={() => (msg ? goChat(msg) : navigate(to))}
+                  className="card-hover text-left"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center mb-3">
+                    <Icon size={20} className="text-primary-600" />
+                  </div>
+                  <p className="font-semibold text-sm text-gray-800 leading-tight">
+                    {t(titleKey, defaultTitle)}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {t(descKey, defaultDesc)}
+                  </p>
+                </button>
+              ),
+            )}
           </div>
         </div>
 
@@ -151,8 +192,8 @@ export default function HomePage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Emergency Fund Calculator */}
-            <Link 
-              to="/emergency" 
+            <Link
+              to="/emergency"
               className="card-hover text-left bg-gradient-to-br from-red-50 to-orange-50 border-red-100 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between mb-3">
@@ -167,13 +208,16 @@ export default function HomePage() {
                 {t("home.emergency", "Emergency Fund")}
               </p>
               <p className="text-xs text-gray-600 leading-relaxed">
-                {t("home.emergencyDesc", "FD तोड़ें या Overdraft लें? सबसे सही विकल्प जानें")}
+                {t(
+                  "home.emergencyDesc",
+                  "FD तोड़ें या Overdraft लें? सबसे सही विकल्प जानें",
+                )}
               </p>
             </Link>
 
             {/* Open New FD Guide */}
-            <Link 
-              to="/open-fd" 
+            <Link
+              to="/open-fd"
               className="card-hover text-left bg-gradient-to-br from-green-50 to-emerald-50 border-green-100 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between mb-3">
@@ -188,14 +232,17 @@ export default function HomePage() {
                 {t("home.openFd", "Open New FD")}
               </p>
               <p className="text-xs text-gray-600 leading-relaxed">
-                {t("home.openFdDesc", "ऑनलाइन या ब्रांच में FD कैसे खोलें - पूरी जानकारी")}
+                {t(
+                  "home.openFdDesc",
+                  "ऑनलाइन या ब्रांच में FD कैसे खोलें - पूरी जानकारी",
+                )}
               </p>
             </Link>
           </div>
         </div>
 
         {/* ── Two-column on desktop: advice + stats ─────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="">
           {/* Saathi advice card */}
           <div className="saathi-advice">
             <div className="w-8 h-8 rounded-full bg-secondary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -206,13 +253,16 @@ export default function HomePage() {
                 {t("home.adviceTitle", "साथी की सलाह")}
               </p>
               <p className="text-sm text-secondary-800 leading-relaxed">
-                {t("home.adviceDesc", "बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज कमाएं।")}
+                {t(
+                  "home.adviceDesc",
+                  "बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज कमाएं।",
+                )}
               </p>
             </div>
           </div>
 
           {/* Quick stats card */}
-          <div className="card bg-primary-50 border-primary-100">
+          {/* <div className="card bg-primary-50 border-primary-100">
             <p className="text-xs font-bold text-primary-700 mb-3 uppercase tracking-wide">
               {t("home.todayRates", "आज की दरें")}
             </p>
@@ -232,7 +282,7 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
