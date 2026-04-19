@@ -24,9 +24,21 @@ const TENORS = [
 
 const BANK_FILTERS = [
   { labelKey: "compare.filters.all", defaultLabel: "सभी", value: "" },
-  { labelKey: "compare.filters.govt", defaultLabel: "सरकारी बैंक", value: "govt" },
-  { labelKey: "compare.filters.private", defaultLabel: "प्राइवेट", value: "private" },
-  { labelKey: "compare.filters.sf", defaultLabel: "स्मॉल फाइनेंस", value: "small_finance" },
+  {
+    labelKey: "compare.filters.govt",
+    defaultLabel: "सरकारी बैंक",
+    value: "govt",
+  },
+  {
+    labelKey: "compare.filters.private",
+    defaultLabel: "प्राइवेट",
+    value: "private",
+  },
+  {
+    labelKey: "compare.filters.sf",
+    defaultLabel: "स्मॉल फाइनेंस",
+    value: "small_finance",
+  },
 ];
 
 function formatINR(n) {
@@ -65,7 +77,8 @@ function BankCard({ bank, rank, inputAmount }) {
           className="bg-primary-500 text-white text-xs font-bold px-3 py-1
                         rounded-t-xl -mx-4 -mt-4 mb-3 text-center flex items-center justify-center gap-1"
         >
-          <Star size={11} fill="white" /> {t("compare.highestInterest", "सबसे अधिक ब्याज")}
+          <Star size={11} fill="white" />{" "}
+          {t("compare.highestInterest", "सबसे अधिक ब्याज")}
         </div>
       )}
 
@@ -86,7 +99,9 @@ function BankCard({ bank, rank, inputAmount }) {
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-primary-600">{bank.rate}%</p>
-          <p className="text-xs text-gray-400">{t("compare.perYear", "प्रति वर्ष")}</p>
+          <p className="text-xs text-gray-400">
+            {t("compare.perYear", "प्रति वर्ष")}
+          </p>
         </div>
       </div>
 
@@ -101,13 +116,17 @@ function BankCard({ bank, rank, inputAmount }) {
 
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div className="bg-green-50 rounded-xl p-2 text-center">
-          <p className="text-[10px] text-gray-500">{t("compare.interestEarned", "ब्याज मिलेगा")}</p>
+          <p className="text-[10px] text-gray-500">
+            {t("compare.interestEarned", "ब्याज मिलेगा")}
+          </p>
           <p className="font-bold text-green-700 text-sm">
             {formatINR(bank.interestEarned)}
           </p>
         </div>
         <div className="bg-secondary-50 rounded-xl p-2 text-center">
-          <p className="text-[10px] text-gray-500">{t("compare.maturityAmount", "परिपक्वता राशि")}</p>
+          <p className="text-[10px] text-gray-500">
+            {t("compare.maturityAmount", "परिपक्वता राशि")}
+          </p>
           <p className="font-bold text-secondary-700 text-sm">
             {formatINR(bank.maturityAmount)}
           </p>
@@ -158,7 +177,9 @@ export default function ComparePage() {
   const handleCompare = async () => {
     const amt = Number(amount);
     if (!amt || amt < 1000) {
-      toast.error(t("compare.errorMinAmount", "न्यूनतम राशि ₹1,000 होनी चाहिए"));
+      toast.error(
+        t("compare.errorMinAmount", "न्यूनतम राशि ₹1,000 होनी चाहिए"),
+      );
       return;
     }
     setLoading(true);
@@ -171,7 +192,9 @@ export default function ComparePage() {
       setResults(res);
       setCompared(true);
     } catch {
-      toast.error(t("compare.errorCompare", "तुलना नहीं हो सकी, फिर कोशिश करें"));
+      toast.error(
+        t("compare.errorCompare", "तुलना नहीं हो सकी, फिर कोशिश करें"),
+      );
     } finally {
       setLoading(false);
     }
@@ -187,7 +210,9 @@ export default function ComparePage() {
         <h2 className="font-headline text-lg md:text-xl font-bold text-gray-800">
           {t("compare.title", "FD दरें तुलना करें")}
         </h2>
-        <p className="text-sm text-gray-500">{t("compare.subtitle", "सभी बैंकों की दरें एक साथ देखें")}</p>
+        <p className="text-sm text-gray-500">
+          {t("compare.subtitle", "सभी बैंकों की दरें एक साथ देखें")}
+        </p>
       </div>
 
       {/* ── Desktop: side-by-side layout ────────────────────────── */}
@@ -252,8 +277,12 @@ export default function ComparePage() {
           {/* Senior toggle */}
           <div className="flex items-center justify-between py-1">
             <div>
-              <p className="text-sm font-medium text-gray-700">{t("compare.seniorToggle", "वरिष्ठ नागरिक")}</p>
-              <p className="text-xs text-gray-400">{t("compare.seniorDesc", "60+ वर्ष — अतिरिक्त ब्याज")}</p>
+              <p className="text-sm font-medium text-gray-700">
+                {t("compare.seniorToggle", "वरिष्ठ नागरिक")}
+              </p>
+              <p className="text-xs text-gray-400">
+                {t("compare.seniorDesc", "60+ वर्ष — अतिरिक्त ब्याज")}
+              </p>
             </div>
             <div
               onClick={() => setIsSenior(!isSenior)}
@@ -280,6 +309,31 @@ export default function ComparePage() {
               </>
             )}
           </button>
+          <div className="mt-8 card bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
+                <ArrowRight size={24} className="text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-gray-800 mb-1">
+                  {t("compare.readyToOpen", "FD खोलने के लिए तैयार हैं?")}
+                </p>
+                <p className="text-sm text-gray-600 mb-3">
+                  {t(
+                    "compare.readyDesc",
+                    "ऑनलाइन या ब्रांच में FD कैसे खोलें - पूरी जानकारी देखें",
+                  )}
+                </p>
+                <Link
+                  to="/open-fd"
+                  className="btn-primary text-sm inline-flex items-center gap-2"
+                >
+                  {t("compare.viewGuide", "गाइड देखें")}
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── Right: Results ────────────────────────────────────── */}
@@ -309,7 +363,9 @@ export default function ComparePage() {
             <div className="bg-tertiary-500 rounded-2xl p-4 text-white">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp size={15} />
-                <p className="text-xs font-medium opacity-80">{t("home.adviceTitle", "साथी की सलाह")}</p>
+                <p className="text-xs font-medium opacity-80">
+                  {t("home.adviceTitle", "साथी की सलाह")}
+                </p>
               </div>
               <p className="font-headline font-bold">
                 {filteredResults[0].bankName}
@@ -336,34 +392,37 @@ export default function ComparePage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 animate-pulse">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="card p-4 space-y-4">
-                   <div className="flex justify-between items-start">
-                     <div className="flex gap-3">
-                       <div className="w-8 h-8 rounded-full bg-gray-200"></div>
-                       <div className="space-y-2">
-                         <div className="h-4 w-24 bg-gray-200 rounded"></div>
-                         <div className="h-3 w-16 bg-gray-200 rounded"></div>
-                       </div>
-                     </div>
-                     <div className="space-y-2 text-right">
-                       <div className="h-6 w-12 bg-gray-200 rounded inline-block"></div>
-                       <div className="h-3 w-10 bg-gray-200 rounded ml-auto"></div>
-                     </div>
-                   </div>
-                   <div className="flex gap-2">
-                     <div className="h-6 w-20 bg-gray-200 rounded-lg"></div>
-                     <div className="h-6 w-16 bg-gray-200 rounded-lg"></div>
-                   </div>
-                   <div className="grid grid-cols-2 gap-2 mt-2">
-                     <div className="h-12 bg-gray-200 rounded-xl"></div>
-                     <div className="h-12 bg-gray-200 rounded-xl"></div>
-                   </div>
+                  <div className="flex justify-between items-start">
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gray-200"></div>
+                      <div className="space-y-2">
+                        <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                        <div className="h-3 w-16 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-right">
+                      <div className="h-6 w-12 bg-gray-200 rounded inline-block"></div>
+                      <div className="h-3 w-10 bg-gray-200 rounded ml-auto"></div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-6 w-20 bg-gray-200 rounded-lg"></div>
+                    <div className="h-6 w-16 bg-gray-200 rounded-lg"></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="h-12 bg-gray-200 rounded-xl"></div>
+                    <div className="h-12 bg-gray-200 rounded-xl"></div>
+                  </div>
                 </div>
               ))}
             </div>
           ) : compared ? (
             filteredResults.length === 0 ? (
               <div className="card text-center py-8 text-gray-500">
-                {t("compare.noBankFound", "इस फ़िल्टर के लिए कोई बैंक नहीं मिला")}
+                {t(
+                  "compare.noBankFound",
+                  "इस फ़िल्टर के लिए कोई बैंक नहीं मिला",
+                )}
               </div>
             ) : (
               <>
@@ -379,28 +438,6 @@ export default function ComparePage() {
                 </div>
 
                 {/* ── NEW: CTA to Open FD ────────────────────────── */}
-                <div className="mt-8 card bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
-                      <ArrowRight size={24} className="text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-bold text-gray-800 mb-1">
-                        {t("compare.readyToOpen", "FD खोलने के लिए तैयार हैं?")}
-                      </p>
-                      <p className="text-sm text-gray-600 mb-3">
-                        {t("compare.readyDesc", "ऑनलाइन या ब्रांच में FD कैसे खोलें - पूरी जानकारी देखें")}
-                      </p>
-                      <Link 
-                        to="/open-fd" 
-                        className="btn-primary text-sm inline-flex items-center gap-2"
-                      >
-                        {t("compare.viewGuide", "गाइड देखें")} 
-                        <ArrowRight size={16} />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
               </>
             )
           ) : (
