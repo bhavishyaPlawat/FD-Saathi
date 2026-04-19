@@ -17,9 +17,23 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    // Inside your api.js interceptor:
     if (err.response?.status === 401) {
+      const token = localStorage.getItem("token");
+
+      // 1. Clear standard token
       localStorage.removeItem("token");
-      window.location.href = "/login";
+
+      // 2. Clear Zustand's persisted auth state to ensure total consistency!
+      localStorage.removeItem("auth-storage");
+
+      const isAuthRoute =
+        window.location.pathname === "/login" ||
+        window.location.pathname === "/register";
+
+      if (token && !isAuthRoute) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(err);
   },
