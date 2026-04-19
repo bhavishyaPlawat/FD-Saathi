@@ -23,10 +23,21 @@ export const useAuthStore = create(
           return { success: true };
         } catch (err) {
           set({ isLoading: false });
+          console.log("[v0] Login error response:", err.response?.status, err.response?.data);
+          
+          // Handle different error types
+          const statusCode = err.response?.status;
+          const errorData = err.response?.data;
+          
+          // 401 = Invalid credentials (already handled by interceptor)
+          // 422 = Validation error (malformed request)
+          // 500 = Server error
+          
           return {
             success: false,
-            message: err.response?.data?.message || "Login failed",
-            fieldErrors: err.response?.data?.errors || null,
+            message: errorData?.message || "Login failed",
+            fieldErrors: errorData?.errors || null,
+            statusCode: statusCode,
           };
         }
       },

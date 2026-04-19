@@ -18,8 +18,16 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      // Only redirect if we have a token (meaning it expired or became invalid)
+      const token = localStorage.getItem("token");
+      if (token) {
+        localStorage.removeItem("token");
+        // Use a flag to prevent repeated redirects
+        const isLoginPage = window.location.pathname === "/login";
+        if (!isLoginPage) {
+          window.location.href = "/login";
+        }
+      }
     }
     return Promise.reject(err);
   },
