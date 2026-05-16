@@ -48,7 +48,7 @@ export default function AppLayout() {
             </div>
             <div>
               <span className="font-headline font-bold text-white text-base tracking-wide block">
-                Digital Saathi
+                {t("app.name", "डिजिटल साथी")}
               </span>
               <span className="text-white/40 text-xs">{t("app.subtitle", "आपका साथी")}</span>
             </div>
@@ -141,7 +141,7 @@ export default function AppLayout() {
               </svg>
             </div>
             <span className="font-headline font-bold text-white text-base tracking-wide">
-              Digital Saathi
+              {t("app.name", "डिजिटल साथी")}
             </span>
           </div>
           <button

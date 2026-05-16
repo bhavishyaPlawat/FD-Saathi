@@ -67,7 +67,13 @@
     },
     "adviceTitle": "Advice",
     "adviceDesc": "Instead of savings, earn up to 7.5% in a 1Y FD.",
-    "todayRates": "Today Rates"
+    "todayRates": "Today Rates",
+    "calculator": "Calculator",
+    "emergency": "Emergency Fund",
+    "emergencyDesc": "Break FD or take Overdraft? Find the best option",
+    "guide": "Guide",
+    "openFd": "Open New FD",
+    "openFdDesc": "How to open FD online or at branch - complete guide"
   },
   "profile": {
     "langSuccess": "Language changed",
@@ -76,7 +82,8 @@
   "general": {
     "today": "Today",
     "yesterday": "Yesterday",
-    "daysAgo": "{{count}} days ago"
+    "daysAgo": "{{count}} days ago",
+    "back": "Go Back"
   },
   "history": {
     "title": "History",
@@ -141,7 +148,6 @@
     "network": "Connection error. Please check your internet."
   },
   "emergency": {
-    "subtitle":"Break the FD or Take Over Draft which is beneficial",
     "title": "Emergency Funds",
     "subtitle": "Break FD or take an Overdraft? Find the best option",
     "inputsLabel": "Enter FD Details",
@@ -160,6 +166,7 @@
     "odInfo": "Interest to be paid on loan",
     "descOD": "Taking a loan will result in less overall loss because a large portion of your FD will continue earning interest.",
     "descBreak": "The interest on the loan would be more than the penalty of breaking the FD. Breaking is the right choice."
+    
   },
   "openFd": {
     "title": "Open New FD",
