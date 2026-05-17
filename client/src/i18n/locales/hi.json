@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Digital Saathi",
+    "name": "डिजिटल साथी",
     "tagline": "आपका वित्तीय साथी",
     "subtitle": "आपका साथी"
   },
@@ -42,6 +42,7 @@
     "newAccount": "नया अकाउंट?"
   },
   "home": {
+    "toolsLabel":"विशेषताएँ",
     "greeting": "नमस्ते 👋",
     "subtitle": "आज कौन सी FD समझनी है?",
     "askPlaceholder": "FD के बारे में पूछें...",
@@ -66,7 +67,13 @@
     },
     "adviceTitle": "साथी की सलाह",
     "adviceDesc": "बचत खाते में पैसा रखने के बजाय, 1 साल की FD में 7.5% तक ब्याज कमाएं।",
-    "todayRates": "आज की दरें"
+    "todayRates": "आज की दरें",
+    "calculator": "कैलकुलेटर",
+    "emergency": "आपातकालीन निधि",
+    "emergencyDesc": "FD तोड़ें या Overdraft लें? सबसे सही विकल्प जानें",
+    "guide": "गाइड",
+    "openFd": "नयी FD खोलें",
+    "openFdDesc": "ऑनलाइन या ब्रांच में FD कैसे खोलें - पूरी जानकारी"
   },
   "profile": {
     "langSuccess": "भाषा बदल दी गई",
@@ -75,7 +82,8 @@
   "general": {
     "today": "आज",
     "yesterday": "कल",
-    "daysAgo": "{{count}} दिन पहले"
+    "daysAgo": "{{count}} दिन पहले",
+    "back": "वापस जाएं"
   },
   "history": {
     "title": "स्मृति (Memory)",
@@ -149,7 +157,7 @@
     "daysElapsed": "FD को कितने दिन हो गए?",
     "daysRemaining": "FD में कितने दिन बचे हैं?",
     "calculate": "कैलकुलेट करें",
-    "odLimit": "OD usually up to 90%. Break FD instead.",
+    "odLimit": "ओडी आमतौर पर 90% तक होता है। इसके बजाय एफडी को तोड़ें",
     "recOD": "सुझाव: FD Overdraft (Loan) लेना बेहतर है",
     "recBreak": "सुझाव: FD तोड़ देना बेहतर है",
     "costBreak": "FD तोड़ने का अंदाज़न नुकसान",
